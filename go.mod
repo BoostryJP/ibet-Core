@@ -23,7 +23,7 @@ require (
 	github.com/coreos/etcd v3.3.27+incompatible
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set/v2 v2.6.0
-	github.com/docker/docker v27.2.1+incompatible
+	github.com/docker/docker v28.0.0+incompatible
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
 	github.com/eapache/channels v1.1.0
 	github.com/fatih/color v1.17.0
@@ -120,6 +120,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
+	github.com/moby/sys/reexec v0.1.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/oklog/run v1.1.0 // indirect

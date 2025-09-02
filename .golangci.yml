@@ -7,9 +7,11 @@ linters:
   enable:
     - bidichk
     - durationcheck
+    - gocheckcompilerdirectives
     - govet
     - ineffassign
     - misspell
+    - reassign
     - staticcheck
     - unconvert
     - unused
@@ -50,6 +52,9 @@ linters:
           - deadcode
           - staticcheck
         path: crypto/bn256/cloudflare/optate.go
+      - linters:
+          - revive
+        path: crypto/bn256/
       - path: internal/build/pgp.go
         text: 'SA1019: "golang.org/x/crypto/openpgp" is deprecated: this package is unmaintained except for security fixes.'
       - path: core/vm/contracts.go
@@ -70,8 +75,6 @@ linters:
         text: 'SA1019: strings.Title has been deprecated since Go 1.18 and an alternative has been available since Go 1.0: The rule Title uses for word boundaries does not handle Unicode punctuation properly. Use golang.org/x/text/cases instead.'
       - path: (.+)\.go$
         text: 'SA1029: should not use built-in type string as key for value'
-      - path: (.+)\.go$
-        text: 'os.MkdirTemp() could be replaced by t.TempDir()'
     paths:
       - core/genesis_alloc.go
       - third_party$

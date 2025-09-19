@@ -9,13 +9,8 @@ import (
 )
 
 func TestLocalVerifier_VerifySignature(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	arbitraryPluginDefinition := &PluginDefinition{
 		Name:    "arbitrary-plugin",
 		Version: "1.0.0",

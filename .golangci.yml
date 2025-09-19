@@ -15,6 +15,7 @@ linters:
     - staticcheck
     - unconvert
     - unused
+    - usetesting
     - whitespace
 
     # - structcheck # lots of false positives

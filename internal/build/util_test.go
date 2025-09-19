@@ -21,7 +21,7 @@ func TestIgnorePackages_whenIgnoreOnePackage(t *testing.T) {
 	assert := testifyassert.New(t)
 
 	arbitraryPackages := []string{"abc", "xyz/abc"}
-	assert.NoError(os.Setenv("QUORUM_IGNORE_TEST_PACKAGES", "abc"))
+	assert.NoError(os.Setenv("QUORUM_IGNORE_TEST_PACKAGES", "abc")) // nolint:usetesting
 
 	actual := IgnorePackages(arbitraryPackages)
 
@@ -32,7 +32,7 @@ func TestIgnorePackages_whenIgnorePackages(t *testing.T) {
 	assert := testifyassert.New(t)
 
 	arbitraryPackages := []string{"abc", "xyz/abc/opq"}
-	assert.NoError(os.Setenv("QUORUM_IGNORE_TEST_PACKAGES", "abc, xyz/abc"))
+	assert.NoError(os.Setenv("QUORUM_IGNORE_TEST_PACKAGES", "abc, xyz/abc")) // nolint:usetesting
 
 	actual := IgnorePackages(arbitraryPackages)
 

@@ -41,11 +41,7 @@ import (
 // ones or automatically generated temporary ones.
 func TestDatadirCreation(t *testing.T) {
 	// Create a temporary data dir and check that it can be used by a node
-	dir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create manual data dir: %v", err)
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	node, err := New(&Config{DataDir: dir})
 	if err != nil {
@@ -67,11 +63,10 @@ func TestDatadirCreation(t *testing.T) {
 		t.Fatalf("freshly created datadir not accessible: %v", err)
 	}
 	// Verify that an impossible datadir fails creation
-	file, err := os.CreateTemp("", "")
+	file, err := os.CreateTemp(t.TempDir(), "")
 	if err != nil {
 		t.Fatalf("failed to create temporary file: %v", err)
 	}
-	defer os.Remove(file.Name())
 
 	dir = filepath.Join(file.Name(), "invalid/path")
 	_, err = New(&Config{DataDir: dir})
@@ -118,11 +113,7 @@ func TestIPCPathResolution(t *testing.T) {
 // ephemeral.
 func TestNodeKeyPersistency(t *testing.T) {
 	// Create a temporary folder and make sure no key is present
-	dir, err := os.MkdirTemp("", "node-test")
-	if err != nil {
-		t.Fatalf("failed to create temporary data directory: %v", err)
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	keyfile := filepath.Join(dir, "unit-test", datadirPrivateKey)
 
@@ -177,10 +168,8 @@ func TestConfig_ResolvePluginBaseDir_whenPluginFeatureIsDisabled(t *testing.T) {
 }
 
 func TestConfig_ResolvePluginBaseDir_whenBaseDirDoesNotExist(t *testing.T) {
-	arbitraryBaseDir := path.Join(os.TempDir(), fmt.Sprintf("foo-%d", time.Now().Unix()))
-	defer func() {
-		_ = os.RemoveAll(arbitraryBaseDir)
-	}()
+	arbitraryBaseDir := path.Join(t.TempDir(), fmt.Sprintf("foo-%d", time.Now().Unix()))
+
 	testObject := &Config{
 		Plugins: &plugin.Settings{
 			BaseDir: plugin.EnvironmentAwaredValue(arbitraryBaseDir),
@@ -193,13 +182,8 @@ func TestConfig_ResolvePluginBaseDir_whenBaseDirDoesNotExist(t *testing.T) {
 }
 
 func TestConfig_ResolvePluginBaseDir_whenBaseDirExists(t *testing.T) {
-	arbitraryBaseDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(arbitraryBaseDir)
-	}()
+	arbitraryBaseDir := t.TempDir()
+
 	testObject := &Config{
 		Plugins: &plugin.Settings{
 			BaseDir: plugin.EnvironmentAwaredValue(arbitraryBaseDir),
@@ -212,13 +196,8 @@ func TestConfig_ResolvePluginBaseDir_whenBaseDirExists(t *testing.T) {
 
 // Quorum
 func TestConfig_IsPermissionEnabled_whenTypical(t *testing.T) {
-	tmpdir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpdir)
-	}()
+	tmpdir := t.TempDir()
+
 	if err := os.WriteFile(path.Join(tmpdir, params.PERMISSION_MODEL_CONFIG), []byte("foo"), 0644); err != nil {
 		t.Fatal(err)
 	}
@@ -243,7 +222,7 @@ func TestConfig_IsPermissionEnabled_whenPermissionedFlagIsFalse(t *testing.T) {
 func TestConfig_IsPermissionEnabled_whenPermissionConfigIsNotAvailable(t *testing.T) {
 	testObject := &Config{
 		EnableNodePermission: true,
-		DataDir:              os.TempDir(),
+		DataDir:              t.TempDir(),
 	}
 
 	assert.False(t, testObject.IsPermissionEnabled())

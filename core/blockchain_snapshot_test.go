@@ -22,7 +22,6 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -57,11 +56,7 @@ type snapshotTestBasic struct {
 
 func (basic *snapshotTestBasic) prepare(t *testing.T) (*BlockChain, []*types.Block) {
 	// Create a temporary persistent database
-	datadir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("Failed to create temporary datadir: %v", err)
-	}
-	os.RemoveAll(datadir)
+	datadir := t.TempDir()
 
 	db, err := rawdb.NewLevelDBDatabaseWithFreezer(datadir, 0, 0, datadir, "", false)
 	if err != nil {
@@ -205,7 +200,6 @@ func (basic *snapshotTestBasic) dump() string {
 func (basic *snapshotTestBasic) teardown() {
 	basic.db.Close()
 	basic.gendb.Close()
-	os.RemoveAll(basic.datadir)
 }
 
 // snapshotTest is a test case type for normal snapshot recovery.

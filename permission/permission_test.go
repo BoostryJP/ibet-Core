@@ -758,8 +758,7 @@ func TestPermissionCtrl_whenUpdateFile(t *testing.T) {
 	err := testObject.populateInitPermissions(orgCacheSize, roleCacheSize, nodeCacheSize, accountCacheSize)
 	assert.NoError(t, err)
 
-	d, _ := os.MkdirTemp("", "qdata")
-	defer os.RemoveAll(d)
+	d := t.TempDir()
 
 	testObject.dataDir = d
 	ptype.UpdatePermissionedNodes(testObject.node, d, arbitraryNode1, ptype.NodeAdd, true)
@@ -802,8 +801,7 @@ func TestPermissionCtrl_whenUpdateFile(t *testing.T) {
 }
 
 func TestParsePermissionConfig(t *testing.T) {
-	d, _ := os.MkdirTemp("", "qdata")
-	defer os.RemoveAll(d)
+	d := t.TempDir()
 
 	_, err := ptype.ParsePermissionConfig(d)
 	assert.True(t, err != nil, "expected file not there error")

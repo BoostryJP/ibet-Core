@@ -256,7 +256,7 @@ func TestResolvePSIProvider_whenTypicalEndpoints(t *testing.T) {
 }
 
 func TestResolvePSIProvider_whenEnvVariableTakesPrecedence(t *testing.T) {
-	_ = os.Setenv(EnvVarPrivateStateIdentifier, "ENV_PS1")
+	t.Setenv(EnvVarPrivateStateIdentifier, "ENV_PS1")
 	defer func() { _ = os.Unsetenv(EnvVarPrivateStateIdentifier) }()
 
 	endpoint := "http://aritraryhost?PSI=PS1"

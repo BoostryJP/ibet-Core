@@ -9,13 +9,8 @@ import (
 )
 
 func TestNewVerifier_whenResolvingDefaultPublicKeyLocation(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	if err := os.WriteFile(path.Join(tmpDir, DefaultPublicKeyFile), []byte("foo"), 0644); err != nil {
 		t.Fatal(err)
 	}

@@ -870,7 +870,7 @@ func TestClient_whenProvidingPSIViaEnvVar(t *testing.T) {
 		f := func(transport string) {
 			expectedPSI := "PS1"
 			t.Setenv(EnvVarPrivateStateIdentifier, expectedPSI)
-			defer os.Unsetenv(EnvVarPrivateStateIdentifier)
+
 			srvHandler, srvHttp := startHTTPTestServer(transport)
 			defer func() {
 				srvHandler.Stop()

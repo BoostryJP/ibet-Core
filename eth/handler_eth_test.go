@@ -404,8 +404,6 @@ func testTransactionPropagation(t *testing.T, protocol uint) {
 	}
 	// Interconnect all the sink handlers with the source handler
 	for i, sink := range sinks {
-		sink := sink // Closure for gorotuine below
-
 		sourcePipe, sinkPipe := p2p.MsgPipe()
 		defer sourcePipe.Close()
 		defer sinkPipe.Close()
@@ -496,8 +494,6 @@ func testQuorumTransactionPropagation(t *testing.T, protocol uint) {
 	wgExpectPeerMessages.Add(numberOfPeers)
 	// Interconnect all the sink handlers with the source handler
 	for i, sink := range sinks {
-		sink := sink // Closure for gorotuine below
-
 		sourcePipe, sinkPipe := p2p.MsgPipe()
 		defer sourcePipe.Close()
 		defer sinkPipe.Close()
@@ -686,8 +682,6 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 		td      = source.chain.GetTd(genesis.Hash(), genesis.NumberU64())
 	)
 	for i, sink := range sinks {
-		sink := sink // Closure for gorotuine below
-
 		sourcePipe, sinkPipe := p2p.MsgPipe()
 		defer sourcePipe.Close()
 		defer sinkPipe.Close()
@@ -721,7 +715,6 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 	// Iterate through all the sinks and ensure the correct number got the block
 	done := make(chan struct{}, peers)
 	for _, ch := range blockChs {
-		ch := ch
 		go func() {
 			<-ch
 			done <- struct{}{}

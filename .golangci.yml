@@ -10,6 +10,7 @@ linters:
     - gocheckcompilerdirectives
     - govet
     - ineffassign
+    - mirror
     - misspell
     - reassign
     - staticcheck

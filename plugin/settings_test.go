@@ -26,13 +26,11 @@ func TestReadMultiFormatConfig_whenConfigEmbeddedAsArray(t *testing.T) {
 }
 
 func TestReadMultiFormatConfig_whenConfigEmbeddedAsFile(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "q-")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "q-")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func() {
-		_ = os.Remove(tmpFile.Name())
-	}()
+
 	av1 := "arbitrary value1"
 	_, err = tmpFile.WriteString(av1)
 	if err != nil {
@@ -61,9 +59,8 @@ func TestReadMultiFormatConfig_whenFromEnvVariable(t *testing.T) {
 	assert := testifyassert.New(t)
 
 	arbitraryString := "arbitrary config string"
-	if err := os.Setenv("KEY1", arbitraryString); err != nil {
-		t.Fatal(err)
-	}
+	t.Setenv("KEY1", arbitraryString)
+
 	cfg, err := ReadMultiFormatConfig("env://KEY1")
 
 	assert.NoError(err)
@@ -71,22 +68,19 @@ func TestReadMultiFormatConfig_whenFromEnvVariable(t *testing.T) {
 }
 
 func TestReadMultiFormatConfig_whenFromEnvFile(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "q-")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "q-")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func() {
-		_ = os.Remove(tmpFile.Name())
-	}()
+
 	av1 := "arbitrary value1"
 	_, err = tmpFile.WriteString(av1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log("wrote tmp file: " + tmpFile.Name())
-	if err := os.Setenv("KEY1", tmpFile.Name()); err != nil {
-		t.Fatal(err)
-	}
+
+	t.Setenv("KEY1", tmpFile.Name())
 
 	assert := testifyassert.New(t)
 	cfg, err := ReadMultiFormatConfig("env://KEY1?type=file")
@@ -98,9 +92,7 @@ func TestReadMultiFormatConfig_whenFromEnvFile(t *testing.T) {
 func TestEnvironmentAwaredValue_UnmarshalJSON_whenValueFromEnvVariable(t *testing.T) {
 	assert := testifyassert.New(t)
 
-	if err := os.Setenv("KEY1", "foo"); err != nil {
-		t.Fatal(err)
-	}
+	t.Setenv("KEY1", "foo")
 
 	var value struct {
 		Vinstance EnvironmentAwaredValue
@@ -140,9 +132,7 @@ Vpointer = "bar"`), &value))
 func TestEnvironmentAwaredValue_UnmarshalTOML_whenValueFromEnvVariable(t *testing.T) {
 	assert := testifyassert.New(t)
 
-	if err := os.Setenv("KEY1", "foo"); err != nil {
-		t.Fatal(err)
-	}
+	t.Setenv("KEY1", "foo")
 
 	var value struct {
 		Vinstance EnvironmentAwaredValue

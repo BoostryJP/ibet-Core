@@ -2,7 +2,6 @@ package extension
 
 import (
 	"encoding/json"
-	"os"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,13 +24,11 @@ func TestWriteContentsToFileWritesOkay(t *testing.T) {
 		"somekey":                           extensionContracts,
 	}
 
-	datadir, err := os.MkdirTemp("", t.Name())
-	defer os.RemoveAll(datadir)
-	assert.Nil(t, err, "could not create temp directory for test")
+	datadir := t.TempDir()
 
 	dataHandler := NewJsonFileDataHandler(datadir)
 
-	err = dataHandler.Save(psiExtensions)
+	err := dataHandler.Save(psiExtensions)
 	assert.Nil(t, err, "error writing data from file")
 
 	loadedData, err := dataHandler.Load()
@@ -59,13 +56,11 @@ func TestLoadOldContents(t *testing.T) {
 		"somekey":                           extensionContracts,
 	}
 
-	datadir, err := os.MkdirTemp("", t.Name())
-	defer os.RemoveAll(datadir)
-	assert.Nil(t, err, "could not create temp directory for test")
+	datadir := t.TempDir()
 
 	dataHandler := NewJsonFileDataHandler(datadir)
 
-	err = dataHandler.Save(psiExtensions)
+	err := dataHandler.Save(psiExtensions)
 	assert.Nil(t, err, "error writing data from file")
 
 	loadedData, err := dataHandler.Load()

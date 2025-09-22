@@ -116,7 +116,7 @@ func TestDefaultTimeoutsUsedWhenNoConfigFileSpecified(t *testing.T) {
 }
 
 func TestLoadSocketConfigWithTimeouts(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "socketConfigFileWithTimeouts.toml")
+	configFile := filepath.Join(t.TempDir(), "socketConfigFileWithTimeouts.toml")
 	if err := os.WriteFile(configFile, []byte(socketConfigFileWithTimeouts), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -135,7 +135,7 @@ func TestLoadSocketConfigWithTimeouts(t *testing.T) {
 }
 
 func TestLoadSocketConfigWithDefaultTimeouts(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "socketConfigFileNoTimeouts.toml")
+	configFile := filepath.Join(t.TempDir(), "socketConfigFileNoTimeouts.toml")
 	if err := os.WriteFile(configFile, []byte(socketConfigFileNoTimeouts), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -153,7 +153,7 @@ func TestLoadSocketConfigWithDefaultTimeouts(t *testing.T) {
 }
 
 func TestLoadHttpConfigWithTimeouts(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "httpConfigFileWithTimeouts.toml")
+	configFile := filepath.Join(t.TempDir(), "httpConfigFileWithTimeouts.toml")
 	if err := os.WriteFile(configFile, []byte(httpConfigFileWithTimeouts), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -175,7 +175,7 @@ func TestLoadHttpConfigWithTimeouts(t *testing.T) {
 }
 
 func TestLoadHttpConfigWithInvalidTls(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "httpConfigFileWithInvalidTlsMode.toml")
+	configFile := filepath.Join(t.TempDir(), "httpConfigFileWithInvalidTlsMode.toml")
 	if err := os.WriteFile(configFile, []byte(httpConfigFileWithInvalidTlsMode), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -191,7 +191,7 @@ func TestLoadHttpConfigWithInvalidTls(t *testing.T) {
 }
 
 func TestLoadHttpTlsConfigWithTimeouts(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "httpTlsConfigFileWithTimeouts.toml")
+	configFile := filepath.Join(t.TempDir(), "httpTlsConfigFileWithTimeouts.toml")
 	if err := os.WriteFile(configFile, []byte(httpTlsConfigFileWithTimeouts), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -217,7 +217,7 @@ func TestLoadHttpTlsConfigWithTimeouts(t *testing.T) {
 }
 
 func TestLoadHttpConfigWithDefaultTimeouts(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "httpTlsConfigFileNoTimeouts.toml")
+	configFile := filepath.Join(t.TempDir(), "httpTlsConfigFileNoTimeouts.toml")
 	if err := os.WriteFile(configFile, []byte(httpTlsConfigFileNoTimeouts), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -236,7 +236,7 @@ func TestLoadHttpConfigWithDefaultTimeouts(t *testing.T) {
 }
 
 func TestHTTPTlsWithBlankRootCert(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "httpTlsConfigFileNoRootCert.toml")
+	configFile := filepath.Join(t.TempDir(), "httpTlsConfigFileNoRootCert.toml")
 	if err := os.WriteFile(configFile, []byte(httpTlsConfigFileNoRootCert), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -250,7 +250,7 @@ func TestHTTPTlsWithBlankRootCert(t *testing.T) {
 }
 
 func TestHTTPTlsMissingClientCerts(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "invalidHttpTlsConfigFileNoClientCert.toml")
+	configFile := filepath.Join(t.TempDir(), "invalidHttpTlsConfigFileNoClientCert.toml")
 	if err := os.WriteFile(configFile, []byte(invalidHttpTlsConfigFileNoClientCert), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -264,7 +264,7 @@ func TestHTTPTlsMissingClientCerts(t *testing.T) {
 }
 
 func TestHTTPTlsMissingOnlyClientKey(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "invalidHttpTlsConfigFileOnlyClientCert.toml")
+	configFile := filepath.Join(t.TempDir(), "invalidHttpTlsConfigFileOnlyClientCert.toml")
 	if err := os.WriteFile(configFile, []byte(invalidHttpTlsConfigFileOnlyClientCert), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -280,7 +280,7 @@ func TestHTTPTlsMissingOnlyClientKey(t *testing.T) {
 }
 
 func TestHTTPTlsMissingOnlyClientCert(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "invalidHttpTlsConfigFileOnlyClientKey.toml")
+	configFile := filepath.Join(t.TempDir(), "invalidHttpTlsConfigFileOnlyClientKey.toml")
 	if err := os.WriteFile(configFile, []byte(invalidHttpTlsConfigFileOnlyClientKey), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -296,7 +296,7 @@ func TestHTTPTlsMissingOnlyClientCert(t *testing.T) {
 }
 
 func TestTlsWithHTTPUrlOnly(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "httpTlsConfigFileWithHTTPOnly.toml")
+	configFile := filepath.Join(t.TempDir(), "httpTlsConfigFileWithHTTPOnly.toml")
 	if err := os.WriteFile(configFile, []byte(httpTlsConfigFileWithHTTPOnly), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -312,7 +312,7 @@ func TestTlsWithHTTPUrlOnly(t *testing.T) {
 }
 
 func TestSocketWithHTTPNotAllowed(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "invalidConfigWithSocketAndHttp.toml")
+	configFile := filepath.Join(t.TempDir(), "invalidConfigWithSocketAndHttp.toml")
 	if err := os.WriteFile(configFile, []byte(invalidConfigWithSocketAndHttp), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}
@@ -328,7 +328,7 @@ func TestSocketWithHTTPNotAllowed(t *testing.T) {
 }
 
 func TestEitherSocketOrHTTPMustBeSpecified(t *testing.T) {
-	configFile := filepath.Join(os.TempDir(), "invalidConfigWithNoSocketOrHttp.toml")
+	configFile := filepath.Join(t.TempDir(), "invalidConfigWithNoSocketOrHttp.toml")
 	if err := os.WriteFile(configFile, []byte(invalidConfigWithNoSocketOrHttp), 0600); err != nil {
 		t.Fatalf("Failed to create config file for unit test, error: %v", err)
 	}

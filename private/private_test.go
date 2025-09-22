@@ -43,7 +43,7 @@ func TestFromEnvironmentOrNil_whenUsingUnixSocketWithConstellation(t *testing.T)
 			t.Errorf("panic received: %s", r)
 		}
 	}()
-	os.Setenv("ARBITRARY_CONFIG_ENV", socketFile)
+	t.Setenv("ARBITRARY_CONFIG_ENV", socketFile)
 	cfg, err := FromEnvironmentOrNil("ARBITRARY_CONFIG_ENV")
 	assert.NoError(t, err, "unexpected error")
 
@@ -68,7 +68,7 @@ func TestFromEnvironmentOrNil_whenUsingUnixSocketWithTessera(t *testing.T) {
 			t.Errorf("panic received: %s", r)
 		}
 	}()
-	os.Setenv("ARBITRARY_CONFIG_ENV", socketFile)
+	t.Setenv("ARBITRARY_CONFIG_ENV", socketFile)
 	cfg, err := FromEnvironmentOrNil("ARBITRARY_CONFIG_ENV")
 	assert.NoError(t, err, "unexpected error")
 

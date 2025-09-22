@@ -176,10 +176,10 @@ func TestImportPluginAccount_ErrIfInvalidRawkey(t *testing.T) {
 }
 
 func TestImportPluginAccount_ErrIfCLIFlagsNotSet(t *testing.T) {
-	tmpfile, err := os.CreateTemp("", "rawkey")
+	tmpfile, err := os.CreateTemp(t.TempDir(), "rawkey")
 	require.NoError(t, err)
 	t.Log("creating tmp file", "path", tmpfile.Name())
-	defer os.Remove(tmpfile.Name())
+
 	_, err = tmpfile.Write([]byte("1fe8f1ad4053326db20529257ac9401f2e6c769ef1d736b8c2f5aba5f787c72b"))
 	require.NoError(t, err)
 	err = tmpfile.Close()
@@ -214,10 +214,10 @@ func TestImportPluginAccount_ErrIfCLIFlagsNotSet(t *testing.T) {
 }
 
 func TestImportPluginAccount_ErrIfInvalidNewAccountConfig(t *testing.T) {
-	tmpfile, err := os.CreateTemp("", "rawkey")
+	tmpfile, err := os.CreateTemp(t.TempDir(), "rawkey")
 	require.NoError(t, err)
 	t.Log("creating tmp file", "path", tmpfile.Name())
-	defer os.Remove(tmpfile.Name())
+
 	_, err = tmpfile.Write([]byte("1fe8f1ad4053326db20529257ac9401f2e6c769ef1d736b8c2f5aba5f787c72b"))
 	require.NoError(t, err)
 	err = tmpfile.Close()
@@ -260,10 +260,10 @@ func TestImportPluginAccount_ErrIfInvalidNewAccountConfig(t *testing.T) {
 }
 
 func TestImportPluginAccount_ErrIfUnsupportedPluginInConfig(t *testing.T) {
-	tmpfile, err := os.CreateTemp("", "rawkey")
+	tmpfile, err := os.CreateTemp(t.TempDir(), "rawkey")
 	require.NoError(t, err)
 	t.Log("creating tmp file", "path", tmpfile.Name())
-	defer os.Remove(tmpfile.Name())
+
 	_, err = tmpfile.Write([]byte("1fe8f1ad4053326db20529257ac9401f2e6c769ef1d736b8c2f5aba5f787c72b"))
 	require.NoError(t, err)
 	err = tmpfile.Close()

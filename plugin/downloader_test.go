@@ -11,13 +11,8 @@ import (
 )
 
 func TestDownloader_Download_whenPluginIsAvailableLocally(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "p-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	arbitraryPluginDistPath := path.Join(tmpDir, fmt.Sprintf("arbitrary-plugin-1.0.0-%s-%s.zip", runtime.GOOS, runtime.GOARCH))
 	if err := os.WriteFile(arbitraryPluginDistPath, []byte{}, 0644); err != nil {
 		t.Fatal(err)

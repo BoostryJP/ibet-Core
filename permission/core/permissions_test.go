@@ -23,8 +23,7 @@ func TestIsNodePermissioned(t *testing.T) {
 		datadir     string
 		direction   string
 	}
-	d, _ := os.MkdirTemp("", "qdata")
-	defer os.RemoveAll(d)
+	d := t.TempDir()
 	writeNodeToFile(d, params.PERMISSIONED_CONFIG, node1)
 	writeNodeToFile(d, params.PERMISSIONED_CONFIG, node3)
 	writeNodeToFile(d, params.DISALLOWED_CONFIG, node3)
@@ -69,8 +68,7 @@ func Test_isNodeBlackListed(t *testing.T) {
 		dataDir  string
 	}
 
-	d, _ := os.MkdirTemp("", "qdata")
-	defer os.RemoveAll(d)
+	d := t.TempDir()
 	writeNodeToFile(d, params.DISALLOWED_CONFIG, node1)
 	n1, _ := enode.ParseV4(node1)
 	n2, _ := enode.ParseV4(node2)

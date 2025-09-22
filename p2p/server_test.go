@@ -489,11 +489,8 @@ func TestServerSetupConn_whenNotInRaftCluster(t *testing.T) {
 }
 
 func TestServerSetupConn_whenNotPermissioned(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = os.RemoveAll(tmpDir) }()
+	tmpDir := t.TempDir()
+
 	if err := os.WriteFile(path.Join(tmpDir, params.PERMISSIONED_CONFIG), []byte("[]"), 0644); err != nil {
 		t.Fatal(err)
 	}
@@ -517,7 +514,7 @@ func TestServerSetupConn_whenNotPermissioned(t *testing.T) {
 	}
 	defer srv.Stop()
 	p1, _ := net.Pipe()
-	err = srv.SetupConn(p1, inboundConn, clientNode)
+	err := srv.SetupConn(p1, inboundConn, clientNode)
 
 	assert.IsType(t, &peerError{}, err)
 	perr := err.(*peerError)

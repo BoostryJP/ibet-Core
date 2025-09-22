@@ -18,7 +18,6 @@ package snapshot
 
 import (
 	"bytes"
-	"os"
 	"testing"
 
 	"github.com/VictoriaMetrics/fastcache"
@@ -519,16 +518,14 @@ func TestDiskSeek(t *testing.T) {
 	// Create some accounts in the disk layer
 	var db ethdb.Database
 
-	if dir, err := os.MkdirTemp("", "disklayer-test"); err != nil {
+	dir := t.TempDir()
+
+	diskdb, err := leveldb.New(dir, 256, 0, "", false)
+	if err != nil {
 		t.Fatal(err)
-	} else {
-		defer os.RemoveAll(dir)
-		diskdb, err := leveldb.New(dir, 256, 0, "", false)
-		if err != nil {
-			t.Fatal(err)
-		}
-		db = rawdb.NewDatabase(diskdb)
 	}
+	db = rawdb.NewDatabase(diskdb)
+
 	// Fill even keys [0,2,4...]
 	for i := 0; i < 0xff; i += 2 {
 		acc := common.Hash{byte(i)}

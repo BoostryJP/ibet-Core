@@ -107,7 +107,6 @@ func testDAOForkBlockNewChain(t *testing.T, test int, genesis string, expectBloc
 	defer SetResetPrivateConfig("ignore")()
 	// Create a temporary data directory to use and inspect later
 	datadir := tmpdir(t)
-	defer os.RemoveAll(datadir)
 
 	// Start a Geth instance with the requested flags set and immediately terminate
 	if genesis != "" {

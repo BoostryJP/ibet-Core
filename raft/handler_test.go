@@ -29,13 +29,9 @@ import (
 func TestProtocolManager_whenAppliedIndexOutOfSync(t *testing.T) {
 	logger := log.New()
 	logger.SetHandler(log.StreamHandler(os.Stdout, log.TerminalFormat(false)))
-	tmpWorkingDir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpWorkingDir)
-	}()
+
+	tmpWorkingDir := t.TempDir()
+
 	count := 3
 	ports := make([]uint16, count)
 	nodeKeys := make([]*ecdsa.PrivateKey, count)

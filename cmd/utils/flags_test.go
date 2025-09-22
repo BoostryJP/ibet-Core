@@ -105,13 +105,8 @@ func TestSetImmutabilityThreshold(t *testing.T) {
 }
 
 func TestSetPlugins_whenTypical(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	arbitraryJSONFile := path.Join(tmpDir, "arbitary.json")
 	if err := os.WriteFile(arbitraryJSONFile, []byte("{}"), 0644); err != nil {
 		t.Fatal(err)

@@ -23,13 +23,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/docker/docker/pkg/reexec"
 	"github.com/ethereum/go-ethereum/internal/cmdtest"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/moby/sys/reexec"
 )
 
 func tmpdir(t *testing.T) string {
-	dir, err := os.MkdirTemp("", "geth-test")
+	dir, err := os.MkdirTemp("", "geth-test") // nolint:usetesting
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,15 +81,10 @@ func runGeth(t *testing.T, args ...string) *testgeth {
 		}
 	}
 	if tt.Datadir == "" {
+		// The temporary datadir will be removed automatically if something fails below.
 		tt.Datadir = tmpdir(t)
 		tt.Cleanup = func() { os.RemoveAll(tt.Datadir) }
 		args = append([]string{"--datadir", tt.Datadir}, args...)
-		// Remove the temporary datadir if something fails below.
-		defer func() {
-			if t.Failed() {
-				tt.Cleanup()
-			}
-		}()
 	}
 
 	// Boot "geth". This actually runs the test binary but the TestMain

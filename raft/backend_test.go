@@ -1,7 +1,6 @@
 package raft
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -24,13 +23,7 @@ func Test_New_RegistersEthServicePendingLogsFeed(t *testing.T) {
 		t.Fatalf("failed to create eth service, err = %v", err)
 	}
 
-	tmpWorkingDir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpWorkingDir)
-	}()
+	tmpWorkingDir := t.TempDir()
 
 	raftService, err := New(stack, &params.ChainConfig{}, 0, 0, false, time.Second, ethService, nil, tmpWorkingDir, false)
 	if err != nil {

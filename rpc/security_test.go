@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"strconv"
 	"testing"
 	"time"
@@ -256,8 +255,7 @@ func TestResolvePSIProvider_whenTypicalEndpoints(t *testing.T) {
 }
 
 func TestResolvePSIProvider_whenEnvVariableTakesPrecedence(t *testing.T) {
-	_ = os.Setenv(EnvVarPrivateStateIdentifier, "ENV_PS1")
-	defer func() { _ = os.Unsetenv(EnvVarPrivateStateIdentifier) }()
+	t.Setenv(EnvVarPrivateStateIdentifier, "ENV_PS1")
 
 	endpoint := "http://aritraryhost?PSI=PS1"
 	actualCtx := resolvePSIProvider(context.Background(), endpoint)

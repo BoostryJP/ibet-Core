@@ -650,11 +650,8 @@ func TestFastVsFullChains(t *testing.T) {
 		t.Fatalf("failed to insert receipt %d: %v", n, err)
 	}
 	// Freezer style fast import the chain.
-	frdir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create temp freezer dir: %v", err)
-	}
-	defer os.Remove(frdir)
+	frdir := t.TempDir()
+
 	ancientDb, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), frdir, "", false)
 	if err != nil {
 		t.Fatalf("failed to create temp freezer db: %v", err)
@@ -737,18 +734,14 @@ func TestLightVsFastVsFullChainHeads(t *testing.T) {
 	blocks, receipts := GenerateChain(gspec.Config, genesis, ethash.NewFaker(), gendb, int(height), nil)
 
 	// makeDb creates a db instance for testing.
-	makeDb := func() (ethdb.Database, func()) {
-		dir, err := os.MkdirTemp("", "")
-		if err != nil {
-			t.Fatalf("failed to create temp freezer dir: %v", err)
-		}
-		defer os.Remove(dir)
+	makeDb := func() ethdb.Database {
+		dir := t.TempDir()
 		db, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), dir, "", false)
 		if err != nil {
 			t.Fatalf("failed to create temp freezer db: %v", err)
 		}
 		gspec.MustCommit(db)
-		return db, func() { os.RemoveAll(dir) }
+		return db
 	}
 	// Configure a subchain to roll back
 	remove := blocks[height/2].NumberU64()
@@ -768,8 +761,7 @@ func TestLightVsFastVsFullChainHeads(t *testing.T) {
 		}
 	}
 	// Import the chain as an archive node and ensure all pointers are updated
-	archiveDb, delfn := makeDb()
-	defer delfn()
+	archiveDb := makeDb()
 
 	archiveCaching := *defaultCacheConfig
 	archiveCaching.TrieDirtyDisabled = true
@@ -785,8 +777,8 @@ func TestLightVsFastVsFullChainHeads(t *testing.T) {
 	assert(t, "archive", archive, height/2, height/2, height/2)
 
 	// Import the chain as a non-archive node and ensure all pointers are updated
-	fastDb, delfn := makeDb()
-	defer delfn()
+	fastDb := makeDb()
+
 	fast, _ := NewBlockChain(fastDb, nil, gspec.Config, ethash.NewFaker(), vm.Config{}, nil, nil, nil)
 	defer fast.Stop()
 
@@ -805,8 +797,8 @@ func TestLightVsFastVsFullChainHeads(t *testing.T) {
 	assert(t, "fast", fast, height/2, height/2, 0)
 
 	// Import the chain as a ancient-first node and ensure all pointers are updated
-	ancientDb, delfn := makeDb()
-	defer delfn()
+	ancientDb := makeDb()
+
 	ancient, _ := NewBlockChain(ancientDb, nil, gspec.Config, ethash.NewFaker(), vm.Config{}, nil, nil, nil)
 	defer ancient.Stop()
 
@@ -824,8 +816,8 @@ func TestLightVsFastVsFullChainHeads(t *testing.T) {
 		t.Fatalf("failed to truncate ancient store, want %v, have %v", 1, frozen)
 	}
 	// Import the chain as a light node and ensure all pointers are updated
-	lightDb, delfn := makeDb()
-	defer delfn()
+	lightDb := makeDb()
+
 	light, _ := NewBlockChain(lightDb, nil, gspec.Config, ethash.NewFaker(), vm.Config{}, nil, nil, nil)
 	if n, err := light.InsertHeaderChain(headers); err != nil {
 		t.Fatalf("failed to insert header %d: %v", n, err)
@@ -1600,11 +1592,7 @@ func TestBlockchainRecovery(t *testing.T) {
 	blocks, receipts := GenerateChain(gspec.Config, genesis, ethash.NewFaker(), gendb, int(height), nil)
 
 	// Import the chain as a ancient-first node and ensure all pointers are updated
-	frdir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create temp freezer dir: %v", err)
-	}
-	defer os.Remove(frdir)
+	frdir := t.TempDir()
 
 	ancientDb, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), frdir, "", false)
 	if err != nil {
@@ -1672,11 +1660,8 @@ func TestInsertReceiptChainRollback(t *testing.T) {
 	}
 
 	// Set up a BlockChain that uses the ancient store.
-	frdir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create temp freezer dir: %v", err)
-	}
-	defer os.Remove(frdir)
+	frdir := t.TempDir()
+
 	ancientDb, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), frdir, "", false)
 	if err != nil {
 		t.Fatalf("failed to create temp freezer db: %v", err)
@@ -1876,17 +1861,13 @@ func testInsertKnownChainData(t *testing.T, typ string) {
 		b.OffsetTime(-9) // A higher difficulty
 	})
 	// Import the shared chain and the original canonical one
-	dir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create temp freezer dir: %v", err)
-	}
-	defer os.Remove(dir)
+	dir := t.TempDir()
+
 	chaindb, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), dir, "", false)
 	if err != nil {
 		t.Fatalf("failed to create temp freezer db: %v", err)
 	}
 	new(Genesis).MustCommit(chaindb)
-	defer os.RemoveAll(dir)
 
 	chain, err := NewBlockChain(chaindb, nil, params.TestChainConfig, engine, vm.Config{}, nil, nil, nil)
 	if err != nil {
@@ -2158,11 +2139,8 @@ func TestTransactionIndices(t *testing.T) {
 			}
 		}
 	}
-	frdir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create temp freezer dir: %v", err)
-	}
-	defer os.Remove(frdir)
+	frdir := t.TempDir()
+
 	ancientDb, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), frdir, "", false)
 	if err != nil {
 		t.Fatalf("failed to create temp freezer db: %v", err)
@@ -2285,11 +2263,8 @@ func TestSkipStaleTxIndicesInFastSync(t *testing.T) {
 		}
 	}
 
-	frdir, err := os.MkdirTemp("", "")
-	if err != nil {
-		t.Fatalf("failed to create temp freezer dir: %v", err)
-	}
-	defer os.Remove(frdir)
+	frdir := t.TempDir()
+
 	ancientDb, err := rawdb.NewDatabaseWithFreezer(rawdb.NewMemoryDatabase(), frdir, "", false)
 	if err != nil {
 		t.Fatalf("failed to create temp freezer db: %v", err)

@@ -46,13 +46,8 @@ func TestIsCleanEntryPoint(t *testing.T) {
 }
 
 func TestResolveFilePath_whenTypical(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	f, err := os.CreateTemp(tmpDir, "f-")
 	if err != nil {
 		t.Fatal(err)
@@ -88,20 +83,14 @@ func TestVerify_whenInvalid(t *testing.T) {
 }
 
 func TestUnpackPlugin_whenTypical(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	tmpZipFile, err := createArbitraryZip(tmpDir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	workspace, meta, err := unpackPlugin(tmpZipFile)
-
 	if err != nil {
 		t.Fatal(err)
 	}

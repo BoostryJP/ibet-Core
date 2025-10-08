@@ -181,7 +181,7 @@ func TestLoadECDSA(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		f, err := os.CreateTemp("", "loadecdsa_test.*.txt")
+		f, err := os.CreateTemp(t.TempDir(), "loadecdsa_test.*.txt")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -202,13 +202,12 @@ func TestLoadECDSA(t *testing.T) {
 }
 
 func TestSaveECDSA(t *testing.T) {
-	f, err := os.CreateTemp("", "saveecdsa_test.*.txt")
+	f, err := os.CreateTemp(t.TempDir(), "saveecdsa_test.*.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 	file := f.Name()
 	f.Close()
-	defer os.Remove(file)
 
 	key, _ := HexToECDSA(testPrivHex)
 	if err := SaveECDSA(file, key); err != nil {

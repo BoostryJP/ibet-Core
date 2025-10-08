@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"math/big"
 	"math/rand"
-	"os"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/ethdb"
@@ -112,8 +111,7 @@ func TestFreezerModify(t *testing.T) {
 	}
 
 	tables := map[string]bool{"raw": true, "rlp": false}
-	f, dir := newFreezerForTesting(t, tables)
-	defer os.RemoveAll(dir)
+	f, _ := newFreezerForTesting(t, tables)
 	defer f.Close()
 
 	// Commit test data.
@@ -159,7 +157,6 @@ func TestFreezerModifyRollback(t *testing.T) {
 	t.Parallel()
 
 	f, dir := newFreezerForTesting(t, freezerTestTableDef)
-	defer os.RemoveAll(dir)
 
 	theError := errors.New("oops")
 	_, err := f.ModifyAncients(func(op ethdb.AncientWriteOp) error {
@@ -190,8 +187,7 @@ func TestFreezerModifyRollback(t *testing.T) {
 func TestFreezerConcurrentModifyRetrieve(t *testing.T) {
 	t.Parallel()
 
-	f, dir := newFreezerForTesting(t, freezerTestTableDef)
-	defer os.RemoveAll(dir)
+	f, _ := newFreezerForTesting(t, freezerTestTableDef)
 	defer f.Close()
 
 	var (
@@ -251,8 +247,7 @@ func TestFreezerConcurrentModifyRetrieve(t *testing.T) {
 
 // This test runs ModifyAncients and TruncateAncients concurrently with each other.
 func TestFreezerConcurrentModifyTruncate(t *testing.T) {
-	f, dir := newFreezerForTesting(t, freezerTestTableDef)
-	defer os.RemoveAll(dir)
+	f, _ := newFreezerForTesting(t, freezerTestTableDef)
 	defer f.Close()
 
 	var item = make([]byte, 256)
@@ -319,10 +314,8 @@ func TestFreezerConcurrentModifyTruncate(t *testing.T) {
 func newFreezerForTesting(t *testing.T, tables map[string]bool) (*freezer, string) {
 	t.Helper()
 
-	dir, err := os.MkdirTemp("", "freezer")
-	if err != nil {
-		t.Fatal(err)
-	}
+	dir := t.TempDir()
+
 	// note: using low max table size here to ensure the tests actually
 	// switch between multiple files.
 	f, err := newFreezer(dir, "", false, 2049, tables)

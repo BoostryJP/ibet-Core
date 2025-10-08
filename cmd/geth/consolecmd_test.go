@@ -90,7 +90,6 @@ func TestConsoleWelcome(t *testing.T) {
 	coinbase := "0x491937757d1b26e29c507b8d4c0b233c2747e68d"
 
 	datadir := setupIstanbul(t)
-	defer os.RemoveAll(datadir)
 
 	// Start a geth console, make sure it's cleaned up and terminate the console
 	geth := runMinimalGeth(t, "--datadir", datadir, "--miner.etherbase", coinbase, "console")
@@ -134,7 +133,7 @@ func TestAttachWelcome(t *testing.T) {
 	coinbase := "0x491937757d1b26e29c507b8d4c0b233c2747e68d"
 
 	datadir := setupIstanbul(t)
-	defer os.RemoveAll(datadir)
+
 	if runtime.GOOS == "windows" {
 		ipc = `\\.\pipe\geth` + strconv.Itoa(trulyRandInt(100000, 999999))
 	} else {

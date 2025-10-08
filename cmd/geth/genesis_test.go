@@ -78,7 +78,6 @@ func TestCustomGenesis(t *testing.T) {
 	for i, tt := range customGenesisTests {
 		// Create a temporary data directory to use and inspect later
 		datadir := tmpdir(t)
-		defer os.RemoveAll(datadir)
 
 		// copy the node key and static-nodes.json so that geth can start with the raft consensus
 		gethDir := filepath.Join(datadir, "geth")
@@ -109,7 +108,6 @@ func TestCustomGenesisUpgradeWithPrivacyEnhancementsBlock(t *testing.T) {
 	defer SetResetPrivateConfig("ignore")()
 	// Create a temporary data directory to use and inspect later
 	datadir := tmpdir(t)
-	defer os.RemoveAll(datadir)
 
 	// copy the node key and static-nodes.json so that geth can start with the raft consensus
 	gethDir := filepath.Join(datadir, "geth")

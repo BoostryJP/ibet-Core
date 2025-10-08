@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"path"
 	"runtime"
 	"testing"
@@ -94,13 +93,8 @@ func TestCentralClient_PluginSignature(t *testing.T) {
 }
 
 func TestCentralClient_PluginDistribution(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "q-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		_ = os.RemoveAll(tmpDir)
-	}()
+	tmpDir := t.TempDir()
+
 	arbitraryDef := &PluginDefinition{
 		Name:    "arbitrary-plugin",
 		Version: "1.0.0",
@@ -116,7 +110,7 @@ func TestCentralClient_PluginDistribution(t *testing.T) {
 
 	testObject := NewPluginCentralClient(arbitraryConfig)
 
-	err = testObject.PluginDistribution(arbitraryDef, path.Join(tmpDir, "download.zip"))
+	err := testObject.PluginDistribution(arbitraryDef, path.Join(tmpDir, "download.zip"))
 
 	assert.NoError(t, err)
 }

@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -86,10 +85,7 @@ type tester struct {
 // Please ensure you call Close() on the returned tester to avoid leaks.
 func newTester(t *testing.T, confOverride func(*ethconfig.Config)) *tester {
 	// Create a temporary storage for the node keys and initialize it
-	workspace, err := os.MkdirTemp("", "console-tester-")
-	if err != nil {
-		t.Fatalf("failed to create temporary keystore: %v", err)
-	}
+	workspace := t.TempDir()
 
 	// Create a networkless protocol stack and start an Ethereum service within
 	stack, err := node.New(&node.Config{DataDir: workspace, UseLightweightKDF: true, Name: testInstance})
@@ -150,7 +146,6 @@ func (env *tester) Close(t *testing.T) {
 	if err := env.stack.Close(); err != nil {
 		t.Errorf("failed to tear down embedded node: %v", err)
 	}
-	os.RemoveAll(env.workspace)
 }
 
 // Tests that the node lists the correct welcome message, notably that it contains

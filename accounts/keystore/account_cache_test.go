@@ -54,7 +54,6 @@ func TestWatchNewFile(t *testing.T) {
 	t.Parallel()
 
 	dir, ks := tmpKeyStore(t, false)
-	defer os.RemoveAll(dir)
 
 	// Ensure the watcher is started before adding any files.
 	ks.Accounts()
@@ -94,7 +93,7 @@ func TestWatchNoDir(t *testing.T) {
 	t.Parallel()
 
 	// Create ks but not the directory that it watches.
-	dir := filepath.Join(os.TempDir(), fmt.Sprintf("eth-keystore-watch-test-%d-%d", os.Getpid(), rand.Int()))
+	dir := filepath.Join(t.TempDir(), fmt.Sprintf("eth-keystore-watch-test-%d-%d", os.Getpid(), rand.Int()))
 	ks := NewKeyStore(dir, LightScryptN, LightScryptP)
 
 	list := ks.Accounts()
@@ -105,7 +104,6 @@ func TestWatchNoDir(t *testing.T) {
 
 	// Create the directory and copy a key file into it.
 	os.MkdirAll(dir, 0700)
-	defer os.RemoveAll(dir)
 	file := filepath.Join(dir, "aaa")
 	if err := cp.CopyFile(file, cachetestAccounts[0].URL.Path); err != nil {
 		t.Fatal(err)
@@ -319,7 +317,7 @@ func TestUpdatedKeyfileContents(t *testing.T) {
 	t.Parallel()
 
 	// Create a temporary kesytore to test with
-	dir := filepath.Join(os.TempDir(), fmt.Sprintf("eth-keystore-watch-test-%d-%d", os.Getpid(), rand.Int()))
+	dir := filepath.Join(t.TempDir(), fmt.Sprintf("eth-keystore-watch-test-%d-%d", os.Getpid(), rand.Int()))
 	ks := NewKeyStore(dir, LightScryptN, LightScryptP)
 
 	list := ks.Accounts()
@@ -330,7 +328,6 @@ func TestUpdatedKeyfileContents(t *testing.T) {
 
 	// Create the directory and copy a key file into it.
 	os.MkdirAll(dir, 0700)
-	defer os.RemoveAll(dir)
 	file := filepath.Join(dir, "aaa")
 
 	// Place one of our testfiles in there

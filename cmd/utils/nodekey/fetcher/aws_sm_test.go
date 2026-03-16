@@ -36,5 +36,4 @@ func TestBuildGetSecretValueInput_WithBothSelectors(t *testing.T) {
 	_, err := buildGetSecretValueInput("boostry/ibet-network/quorum/nodekey", "f368ae7f-41e6-4d25-8e8e-a3aad0130846", "AWSCURRENT")
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "cannot both be specified")
-
 }

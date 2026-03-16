@@ -436,10 +436,14 @@ func InspectDatabase(db ethdb.Database, keyPrefix, keyStart []byte) error {
 		{"Light client", "Bloom trie nodes", bloomTrieNodes.Size(), bloomTrieNodes.Count()},
 	}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Database", "Category", "Size", "Items"})
-	table.SetFooter([]string{"", "Total", total.String(), " "})
-	table.AppendBulk(stats)
-	table.Render()
+	table.Header("Database", "Category", "Size", "Items")
+	table.Footer("", "Total", total.String(), " ")
+	if err := table.Bulk(stats); err != nil {
+		return err
+	}
+	if err := table.Render(); err != nil {
+		return err
+	}
 
 	if unaccounted.size > 0 {
 		log.Error("Database contains unaccounted data", "size", unaccounted.size, "count", unaccounted.count)

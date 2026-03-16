@@ -207,6 +207,10 @@ func doInstall(cmdline []string) {
 
 	// Disable CLI markdown doc generation in release builds.
 	gobuild.Args = append(gobuild.Args, "-tags", "urfave_cli_no_docs")
+	if runtime.GOOS == "darwin" {
+		// Silence noisy third-party cgo warnings (e.g. go-duktape) on clang.
+		gobuild.Env = appendEnvValue(gobuild.Env, "CGO_CFLAGS", "-w")
+	}
 
 	// We use -trimpath to avoid leaking local paths into the built executables.
 	gobuild.Args = append(gobuild.Args, "-trimpath")
@@ -262,6 +266,22 @@ func buildFlags(env build.Environment, staticLinking bool, buildTags []string) (
 		flags = append(flags, "-tags", strings.Join(buildTags, ","))
 	}
 	return flags
+}
+
+func appendEnvValue(env []string, key, value string) []string {
+	prefix := key + "="
+	for i, kv := range env {
+		if strings.HasPrefix(kv, prefix) {
+			current := strings.TrimPrefix(kv, prefix)
+			if current == "" {
+				env[i] = prefix + value
+			} else if !strings.Contains(current, value) {
+				env[i] = prefix + current + " " + value
+			}
+			return env
+		}
+	}
+	return append(env, prefix+value)
 }
 
 // Running The Tests

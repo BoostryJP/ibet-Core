@@ -218,7 +218,20 @@ func (ld *logDelegate) Trace(msg string, args ...interface{}) {
 }
 
 func (ld *logDelegate) Log(level hclog.Level, msg string, args ...interface{}) {
-	//TODO : implement the method
+	switch level {
+	case hclog.Trace:
+		ld.Trace(msg, args...)
+	case hclog.Debug:
+		ld.Debug(msg, args...)
+	case hclog.Info:
+		ld.Info(msg, args...)
+	case hclog.Warn:
+		ld.Warn(msg, args...)
+	case hclog.Error:
+		ld.Error(msg, args...)
+	default:
+		ld.Info(msg, args...)
+	}
 }
 
 func (ld *logDelegate) Name() string {
@@ -274,6 +287,10 @@ func (ld *logDelegate) ResetNamed(name string) hclog.Logger {
 }
 
 func (ld *logDelegate) SetLevel(level hclog.Level) {
+}
+
+func (*logDelegate) GetLevel() hclog.Level {
+	return hclog.Info
 }
 
 func (*logDelegate) StandardLogger(opts *hclog.StandardLoggerOptions) *slog.Logger {

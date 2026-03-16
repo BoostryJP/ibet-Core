@@ -15,6 +15,27 @@ func TestActivePrecompiles(t *testing.T) {
 		want []common.Address
 	}{
 		{
+			name: "berlin",
+			evm: &EVM{
+				chainRules: params.Rules{
+					IsBerlin:            true,
+					IsPrivacyPrecompile: false,
+				},
+			},
+			want: []common.Address{
+				common.BytesToAddress([]byte{1}),
+				common.BytesToAddress([]byte{2}),
+				common.BytesToAddress([]byte{3}),
+				common.BytesToAddress([]byte{4}),
+				common.BytesToAddress([]byte{5}),
+				common.BytesToAddress([]byte{6}),
+				common.BytesToAddress([]byte{7}),
+				common.BytesToAddress([]byte{8}),
+				common.BytesToAddress([]byte{9}),
+				common.BytesToAddress([]byte{0x1, 0x0}),
+			},
+		},
+		{
 			name: "istanbul-plus-quorum-privacy",
 			evm: &EVM{
 				chainRules: params.Rules{

@@ -24,6 +24,7 @@ However, it has been variously patched to be optimized for ibet Network. For exa
 - The default block generation interval is set to 1 second.
 - Fully supports Go 1.25 and applies new 3rd party packages from a security perspective.
 - Made temporary fixes for bugs before they were fixed in the original GoQuorum.
+- Added secp256r1 (P-256) signature verification precompile support.
 
 ## Building the source
 Building quorum requires both a Go (version 1.25) and a C compiler. 

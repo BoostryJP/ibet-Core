@@ -142,6 +142,7 @@ const (
 	Bls12381PairingPerPairGas uint64 = 23000  // Per-point pair gas price for BLS12-381 elliptic curve pairing check
 	Bls12381MapG1Gas          uint64 = 5500   // Gas price for BLS12-381 mapping field element to G1 operation
 	Bls12381MapG2Gas          uint64 = 110000 // Gas price for BLS12-381 mapping field element to G2 operation
+	P256VerifyGas             uint64 = 6900   // Gas price for P256 signature verification
 
 	QuorumMaximumExtraDataSize uint64 = 65 // Maximum size extra data may be after Genesis.
 	// Quorum - payload for a transaction, the size of the buffer to 128kb to match the maximum allowed in chain config

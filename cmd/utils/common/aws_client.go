@@ -47,5 +47,11 @@ func validateConfigurationValues(config nodekey.AwsConfig) error {
 	if config.SecretName == "" {
 		return errors.New("need to specify secret name to retrieve data from AWS Secrets Manager")
 	}
+	if config.SecretVersionId == "" && config.SecretVersionStage == "" {
+		return errors.New("need to specify either secret version id or secret version stage")
+	}
+	if config.SecretVersionId != "" && config.SecretVersionStage != "" {
+		return errors.New("secret version id and secret version stage are mutually exclusive")
+	}
 	return nil
 }

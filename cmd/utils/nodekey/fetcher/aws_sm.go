@@ -3,6 +3,7 @@ package fetcher
 import (
 	"context"
 	"crypto/ecdsa"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -40,14 +41,14 @@ func (f *NodeKeyAwsSecretsManagerFetcher) FetchEncryptedNodeKey() (string, error
 
 func (f *NodeKeyAwsSecretsManagerFetcher) fetch() (string, error) {
 	secretName := f.aws.Config.SecretName
-	secretVersionID := f.aws.Config.SecretVersion
+	secretVersionID := f.aws.Config.SecretVersionId
+	secretVersionStage := f.aws.Config.SecretVersionStage
 
 	log.Info("Fetching node key from AWS Secrets Manager", "secret", secretName)
 
-	input := &secretsmanager.GetSecretValueInput{SecretId: aws.String(secretName)}
-	// Version is optional: if omitted, AWS resolves the current/default version.
-	if secretVersionID != "" {
-		input.VersionId = aws.String(secretVersionID)
+	input, err := buildGetSecretValueInput(secretName, secretVersionID, secretVersionStage)
+	if err != nil {
+		return "", err
 	}
 
 	ctx := context.Background()
@@ -59,4 +60,21 @@ func (f *NodeKeyAwsSecretsManagerFetcher) fetch() (string, error) {
 		return "", fmt.Errorf("using key [%s], data from secret manager is empty", secretName)
 	}
 	return *resp.SecretString, nil
+}
+
+func buildGetSecretValueInput(secretName, versionID, versionStage string) (*secretsmanager.GetSecretValueInput, error) {
+	input := &secretsmanager.GetSecretValueInput{SecretId: aws.String(secretName)}
+	if versionID == "" && versionStage == "" {
+		return nil, errors.New("either secret version id or secret version stage must be specified")
+	}
+	if versionID != "" && versionStage != "" {
+		return nil, errors.New("secret version id and secret version stage cannot both be specified")
+	}
+	if versionID != "" {
+		input.VersionId = aws.String(versionID)
+	}
+	if versionStage != "" {
+		input.VersionStage = aws.String(versionStage)
+	}
+	return input, nil
 }

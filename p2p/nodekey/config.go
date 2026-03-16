@@ -12,7 +12,8 @@ type FileConfig struct {
 
 type AwsConfig struct {
 	SecretName             string `toml:",omitempty"`
-	SecretVersion          string `toml:",omitempty"`
+	SecretVersionId        string `toml:",omitempty"`
+	SecretVersionStage     string `toml:",omitempty"`
 	KmsKeyId               string `toml:",omitempty"`
 	KmsEncryptionAlgorithm string `toml:",omitempty"`
 }

@@ -21,7 +21,7 @@ Add the following section to your config.toml:
 ```toml
 [Node.P2P.NodeKey.ConfigAws]
 SecretName = "boostry/ibet-network/quorum/nodekey"
-SecretVersion = "AWSCURRENT"
+SecretVersionStage = "AWSCURRENT"
 KmsKeyId = "alias/mykey"
 KmsEncryptionAlgorithm = "RSAES_OAEP_SHA_256"
 ```
@@ -29,7 +29,10 @@ KmsEncryptionAlgorithm = "RSAES_OAEP_SHA_256"
 Field details:
 
 - SecretName: Name or ARN of the secret that stores node key data
-- SecretVersion: Optional secret version ID (if omitted, current/default is used)
+- SecretVersionId: Optional AWS secret version ID
+- SecretVersionStage: Optional AWS secret version stage (for example AWSCURRENT)
+- Either SecretVersionId or SecretVersionStage must be specified
+- SecretVersionId and SecretVersionStage cannot both be specified
 - KmsKeyId: Required when --nodekeydecryption=aws-kms
 - KmsEncryptionAlgorithm: Optional KMS algorithm override for asymmetric keys
 

@@ -38,6 +38,7 @@ import (
 	"github.com/ethereum/go-ethereum/p2p/enr"
 	"github.com/ethereum/go-ethereum/p2p/nat"
 	"github.com/ethereum/go-ethereum/p2p/netutil"
+	p2pnodekey "github.com/ethereum/go-ethereum/p2p/nodekey"
 	"github.com/ethereum/go-ethereum/permission/core"
 )
 
@@ -69,7 +70,8 @@ var errServerStopped = errors.New("server stopped")
 // Config holds Server options.
 type Config struct {
 	// This field must be set to a valid secp256k1 private key.
-	PrivateKey *ecdsa.PrivateKey `toml:"-"`
+	PrivateKey *ecdsa.PrivateKey        `toml:"-"`
+	NodeKey    p2pnodekey.NodeKeyConfig `toml:",omitempty"`
 
 	// MaxPeers is the maximum number of peers that can be
 	// connected. It must be greater than zero.

@@ -124,6 +124,8 @@ var (
 		utils.NetrestrictFlag,
 		utils.NodeKeyFileFlag,
 		utils.NodeKeyHexFlag,
+		utils.NodeKeySource,
+		utils.NodeKeyDecryption,
 		utils.DNSDiscoveryFlag,
 		utils.MainnetFlag,
 		utils.DeveloperFlag,

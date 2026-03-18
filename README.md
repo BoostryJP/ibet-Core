@@ -24,8 +24,8 @@ However, it has been variously patched to be optimized for ibet Network. For exa
 - The default block generation interval is set to 1 second.
 - Fully supports Go 1.25 and applies new 3rd party packages from a security perspective.
 - Made temporary fixes for bugs before they were fixed in the original GoQuorum.
-- Added secp256r1 (P-256) signature verification precompile support.
-- Added bls12-381 signature verification precompile support.
+- Added precompile for secp256r1 signature verification ([EIP-7951](https://eips.ethereum.org/EIPS/eip-7951)).
+- Added precompile for BLS12-381 curve operations ([EIP-2537](https://eips.ethereum.org/EIPS/eip-2537)).
 - Added support for AWS Secrets Manager / KMS based node key management.
 
 ## Building the source

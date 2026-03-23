@@ -34,6 +34,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
+	cmdnodekey "github.com/ethereum/go-ethereum/cmd/utils/nodekey"
+	"github.com/ethereum/go-ethereum/cmd/utils/nodekey/constants"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
 	http2 "github.com/ethereum/go-ethereum/common/http"
@@ -76,6 +78,7 @@ import (
 	"github.com/ethereum/go-ethereum/private"
 	"github.com/ethereum/go-ethereum/raft"
 	pcsclite "github.com/gballet/go-libpcsclite"
+	"github.com/naoina/toml"
 	gopsutil "github.com/shirou/gopsutil/mem"
 	"github.com/urfave/cli/v2"
 )
@@ -710,6 +713,18 @@ var (
 		Usage:    "P2P node key as hex (for testing)",
 		Category: flags.NetworkingCategory,
 	}
+	NodeKeySource = &cli.StringFlag{
+		Name:     "nodekeysource",
+		Usage:    "P2P node key source (file|aws-sm)",
+		Value:    constants.SourceFile,
+		Category: flags.NetworkingCategory,
+	}
+	NodeKeyDecryption = &cli.StringFlag{
+		Name:     "nodekeydecryption",
+		Usage:    "P2P node key decryption scheme (none|aws-kms)",
+		Value:    constants.DecryptionNone,
+		Category: flags.NetworkingCategory,
+	}
 	NATFlag = &cli.StringFlag{
 		Name:     "nat",
 		Usage:    "NAT port mapping mechanism (any|none|upnp|pmp|extip:<IP>|stun:<IP:PORT>)",
@@ -1197,24 +1212,68 @@ func MakeDataDir(ctx *cli.Context) string {
 // method returns nil and an emphemeral key is to be generated.
 func setNodeKey(ctx *cli.Context, cfg *p2p.Config) {
 	var (
-		hex  = ctx.String(NodeKeyHexFlag.Name)
-		file = ctx.String(NodeKeyFileFlag.Name)
-		key  *ecdsa.PrivateKey
-		err  error
+		hex        = ctx.String(NodeKeyHexFlag.Name)
+		file       = ctx.String(NodeKeyFileFlag.Name)
+		source     = strings.ToLower(strings.TrimSpace(ctx.String(NodeKeySource.Name)))
+		decryption = strings.ToLower(strings.TrimSpace(ctx.String(NodeKeyDecryption.Name)))
+		key        *ecdsa.PrivateKey
+		err        error
 	)
+	// Legacy explicit flags take precedence when provided.
 	switch {
 	case file != "" && hex != "":
 		Fatalf("Options %q and %q are mutually exclusive", NodeKeyFileFlag.Name, NodeKeyHexFlag.Name)
 	case file != "":
+		if source != constants.SourceFile {
+			Fatalf("Option %q requires --%s=%s", NodeKeyFileFlag.Name, NodeKeySource.Name, constants.SourceFile)
+		}
 		if key, err = crypto.LoadECDSA(file); err != nil {
 			Fatalf("Option %q: %v", NodeKeyFileFlag.Name, err)
 		}
 		cfg.PrivateKey = key
+		return
 	case hex != "":
+		if source != constants.SourceFile {
+			Fatalf("Option %q requires --%s=%s", NodeKeyHexFlag.Name, NodeKeySource.Name, constants.SourceFile)
+		}
 		if key, err = crypto.HexToECDSA(hex); err != nil {
 			Fatalf("Option %q: %v", NodeKeyHexFlag.Name, err)
 		}
 		cfg.PrivateKey = key
+		return
+	}
+
+	if source == "" {
+		source = constants.SourceFile
+	}
+	if decryption == "" {
+		decryption = constants.DecryptionNone
+	}
+
+	// Fallback flow uses source/decryption settings from CLI + TOML config.
+	switch source {
+	case constants.SourceFile:
+		if decryption != constants.DecryptionNone {
+			Fatalf("invalid node key decryption [%s] for source [%s]", decryption, source)
+		}
+		return
+	case constants.SourceAwsSm:
+		configBytes, err := toml.Marshal(cfg.NodeKey.ConfigAws)
+		if err != nil {
+			Fatalf("cannot parse configurations for nodekey aws fetcher: %v", err)
+		}
+		manager, err := cmdnodekey.NewManager(source, decryption, configBytes)
+		if err != nil {
+			Fatalf("cannot initialize node key manager: %v", err)
+		}
+		key, err := manager.GetNodeKey()
+		if err != nil {
+			Fatalf("unable to retrieve node key: %v", err)
+		}
+		cfg.PrivateKey = key
+		return
+	default:
+		Fatalf("invalid node key source [%s]", source)
 	}
 }
 

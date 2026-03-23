@@ -5,7 +5,7 @@
 # GoQuorum for ibet Network
 
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.5-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.7-blue.svg?cacheSeconds=2592000" />
 </p>
 
 This project is [GoQuorum](https://github.com/ConsenSys/quorum) fork for [ibet Network](https://github.com/BoostryJP/ibet-Network)
@@ -24,6 +24,9 @@ However, it has been variously patched to be optimized for ibet Network. For exa
 - The default block generation interval is set to 1 second.
 - Fully supports Go 1.25 and applies new 3rd party packages from a security perspective.
 - Made temporary fixes for bugs before they were fixed in the original GoQuorum.
+- Added precompile for secp256r1 signature verification ([EIP-7951](https://eips.ethereum.org/EIPS/eip-7951)).
+- Added precompile for BLS12-381 curve operations ([EIP-2537](https://eips.ethereum.org/EIPS/eip-2537)).
+- Added support for AWS Secrets Manager / KMS based node key management.
 
 ## Building the source
 Building quorum requires both a Go (version 1.25) and a C compiler. 
@@ -37,6 +40,11 @@ or, to build the full suite of utilities:
 ```
 make all
 ```
+
+## AWS node key management
+
+For AWS Secrets Manager / KMS based node key setup, see
+[docs/aws-nodekey.md](docs/aws-nodekey.md).
 
 ## License
 

@@ -5,7 +5,7 @@
 # GoQuorum for ibet Network
 
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.7-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-2.8-blue.svg?cacheSeconds=2592000" />
 </p>
 
 This project is [GoQuorum](https://github.com/ConsenSys/quorum) fork for [ibet Network](https://github.com/BoostryJP/ibet-Network)

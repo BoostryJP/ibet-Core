@@ -63,8 +63,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.8 h1:HtOTYcb
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.8/go.mod h1:VsK9abqQeGlzPgUr+isNWzPlK2vKe9INMLWnY65f5Xs=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.22 h1:PUmZeJU6Y1Lbvt9WFuJ0ugUK2xn6hIWUBBbKuOWF30s=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.22/go.mod h1:nO6egFBoAaoXze24a2C0NjQCvdpk8OueRoYimvEB9jo=
-github.com/aws/aws-sdk-go-v2/service/kms v1.50.5 h1:nEzwx/ZlpUZ2Y6WztsgYmfBh5Ixd3QiECawXMzvTMeo=
-github.com/aws/aws-sdk-go-v2/service/kms v1.50.5/go.mod h1:GBO/aaEi47QldDVoqw2CsM2UZQDoqDiFIMJD/ztHPs0=
+github.com/aws/aws-sdk-go-v2/service/kms v1.51.0 h1:696UM+NwOrETBCLQJyCAGtVmmZmziBT59yMwgg6Fvrw=
+github.com/aws/aws-sdk-go-v2/service/kms v1.51.0/go.mod h1:GBO/aaEi47QldDVoqw2CsM2UZQDoqDiFIMJD/ztHPs0=
 github.com/aws/aws-sdk-go-v2/service/route53 v1.62.6 h1:6b+KS0uVMMsCUKlW8OPNxmcEmoEUtqP1LfnzSzWmuQM=
 github.com/aws/aws-sdk-go-v2/service/route53 v1.62.6/go.mod h1:+wmraHmxwqi7feUL/41uULJWl8V1HxtxzOJH6a4ZRg4=
 github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.6 h1:XR42AXidhYs4HwH0I+yElLXVt7zb2hAyNHQJe6Blv7w=
@@ -369,8 +369,8 @@ github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNx
 github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/mattn/go-isatty v0.0.14/go.mod h1:7GGIvUiUoEMVVmxf/4nioHXj79iQHKdU27kJ6hsGG94=
-github.com/mattn/go-isatty v0.0.21 h1:xYae+lCNBP7QuW4PUnNG61ffM4hVIfm+zUzDuSzYLGs=
-github.com/mattn/go-isatty v0.0.21/go.mod h1:ZXfXG4SQHsB/w3ZeOYbR0PrPwLy+n6xiMrJlRFqopa4=
+github.com/mattn/go-isatty v0.0.22 h1:j8l17JJ9i6VGPUFUYoTUKPSgKe/83EYU2zBC7YNKMw4=
+github.com/mattn/go-isatty v0.0.22/go.mod h1:ZXfXG4SQHsB/w3ZeOYbR0PrPwLy+n6xiMrJlRFqopa4=
 github.com/mattn/go-runewidth v0.0.2/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/mattn/go-runewidth v0.0.3/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/mattn/go-runewidth v0.0.19 h1:v++JhqYnZuu5jSKrk9RbgF5v4CGUjqRfBm05byFGLdw=

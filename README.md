@@ -8,22 +8,22 @@
   <img alt="Version" src="https://img.shields.io/badge/version-2.8-blue.svg?cacheSeconds=2592000" />
 </p>
 
-ibet-Core is a [GoQuorum](https://github.com/ConsenSys/quorum)-derived node client optimized for [ibet Network](https://github.com/BoostryJP/ibet-Network).
+ibet-Core is the node client for [ibet Network](https://github.com/BoostryJP/ibet-Network), developed from a [GoQuorum](https://github.com/ConsenSys/quorum) fork and maintained independently by BOOSTRY.
 
 ## Overview
 
-ibet-Core builds on GoQuorum and its go-ethereum foundation while adding changes required to run ibet Network efficiently and securely.
-It is an EVM-compatible blockchain node client derived from go-ethereum, inheriting the execution model and tooling ecosystem used by Ethereum clients.
-The project adopts a suitable GoQuorum version for each ibet-Core release, then applies ibet Network-specific patches and dependency updates.
+ibet-Core started as a fork of GoQuorum, which itself is based on go-ethereum. Since the fork, it has been developed independently for ibet Network rather than tracking new GoQuorum releases.
+It remains an EVM-compatible blockchain node client and selectively incorporates go-ethereum execution-layer improvements, dependency updates, and ibet Network-specific features needed for efficient and secure operation.
 
 The version control policy of this project follows that of ibet-Network.
 
 ## Features
 
-ibet-Core incorporates the final GoQuorum upstream baseline adopted by this project and includes the following ibet Network-focused changes:
+ibet-Core is developed on the GoQuorum baseline adopted by this project and includes the following enhancements:
 - The default block generation interval is set to 1 second.
 - Go 1.25 is supported, with third-party packages updated from a security perspective.
-- Temporary fixes are applied for selected issues before they are fixed in the original GoQuorum.
+- Selected go-ethereum execution-layer improvements are incorporated where they benefit ibet Network.
+- Project-specific fixes and operational improvements are maintained independently after the GoQuorum fork.
 - Added precompile for secp256r1 signature verification ([EIP-7951](https://eips.ethereum.org/EIPS/eip-7951)).
 - Added precompile for BLS12-381 curve operations ([EIP-2537](https://eips.ethereum.org/EIPS/eip-2537)).
 - Added support for AWS Secrets Manager / KMS based node key management.

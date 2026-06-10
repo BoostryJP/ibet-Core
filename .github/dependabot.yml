@@ -11,7 +11,7 @@ updates:
       prefix: "chore(go)"
       include: "scope"
     ignore:
-      # Quorum relies on a forked etcd replacement pinned in go.mod.
+      # ibet-Core relies on the forked etcd replacement pinned in go.mod.
       - dependency-name: "github.com/coreos/etcd"
     groups:
       all-dependencies:

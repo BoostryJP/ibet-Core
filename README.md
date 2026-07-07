@@ -29,7 +29,7 @@ ibet-Core is developed on the GoQuorum baseline adopted by this project and incl
 - Added support for AWS Secrets Manager / KMS based node key management.
 
 ## Building ibet-Core
-Building ibet-Core requires both a Go (version 1.25) and a C compiler.
+Building ibet-Core requires both a Go (version 1.26) and a C compiler.
 You can install them using your favourite package manager. 
 Once the dependencies are installed, run
 ```

@@ -29,6 +29,9 @@ linters:
     # - makezero # false positives
     # - nilerr # several intentional
   settings:
+    govet:
+      disable:
+        - inline
     staticcheck:
       checks:
         # disable Quickfixes

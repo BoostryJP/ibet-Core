@@ -316,6 +316,85 @@ func TestValidatorSetAddAndRemoveByQuorum(t *testing.T) {
 	assertAddresses(t, allValidators, []common.Address{accounts[0].addr, accounts[1].addr, accounts[2].addr, accounts[3].addr})
 }
 
+func TestValidatorSetCanReuseCandidateAcrossVersions(t *testing.T) {
+	// Viewpoint:
+	//  The same candidate can be added, removed, added again, and removed again because proposal IDs are versioned.
+
+	backend, validatorSet, accounts := deployValidatorSet(t)
+	defer backend.Close()
+
+	candidate := accounts[4].addr
+	voteAdd := func(voters ...testAccount) {
+		for _, voter := range voters {
+			mustTransact(t, backend, func() (*types.Transaction, error) {
+				return validatorSet.VoteAddValidator(newTestAuth(t, voter), candidate)
+			})
+		}
+	}
+	voteRemove := func(voters ...testAccount) {
+		for _, voter := range voters {
+			mustTransact(t, backend, func() (*types.Transaction, error) {
+				return validatorSet.VoteRemoveValidator(newTestAuth(t, voter), candidate)
+			})
+		}
+	}
+	assertVersion := func(want int64) {
+		got, err := validatorSet.Version(nil)
+		if err != nil {
+			t.Fatalf("failed to get validator set version: %v", err)
+		}
+		if got.Cmp(big.NewInt(want)) != 0 {
+			t.Fatalf("unexpected validator set version: got %s, want %d", got, want)
+		}
+	}
+
+	assertVersion(0)
+
+	// First add executes at version 0 and advances the version.
+	voteAdd(accounts[0], accounts[1], accounts[2])
+	isValidator, err := validatorSet.IsValidator(nil, candidate)
+	if err != nil {
+		t.Fatalf("failed to check candidate after first add: %v", err)
+	}
+	if !isValidator {
+		t.Fatal("candidate was not added")
+	}
+	assertVersion(1)
+
+	// First remove executes at version 1 and advances the version.
+	voteRemove(accounts[0], accounts[1], accounts[2])
+	isValidator, err = validatorSet.IsValidator(nil, candidate)
+	if err != nil {
+		t.Fatalf("failed to check candidate after first remove: %v", err)
+	}
+	if isValidator {
+		t.Fatal("candidate was not removed")
+	}
+	assertVersion(2)
+
+	// The second add uses a fresh versioned proposal instead of the executed add proposal from version 0.
+	voteAdd(accounts[0], accounts[1], accounts[2])
+	isValidator, err = validatorSet.IsValidator(nil, candidate)
+	if err != nil {
+		t.Fatalf("failed to check candidate after second add: %v", err)
+	}
+	if !isValidator {
+		t.Fatal("candidate was not re-added")
+	}
+	assertVersion(3)
+
+	// The second remove also uses a fresh versioned proposal.
+	voteRemove(accounts[0], accounts[1], accounts[2])
+	isValidator, err = validatorSet.IsValidator(nil, candidate)
+	if err != nil {
+		t.Fatalf("failed to check candidate after second remove: %v", err)
+	}
+	if isValidator {
+		t.Fatal("candidate was not removed again")
+	}
+	assertVersion(4)
+}
+
 func TestValidatorSetRejectsInvalidVotes(t *testing.T) {
 	// Viewpoint:
 	//  Governance votes must come from validators, target valid candidates,

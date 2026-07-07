@@ -34,7 +34,7 @@ contract ValidatorSet {
     event ValidatorRemoved(address indexed validator);
 
     /// @notice Emitted whenever a validator casts a governance vote.
-    /// @param proposalId Unique ID derived from the operation and candidate.
+    /// @param proposalId Unique ID derived from the operation, candidate, and validator set version.
     /// @param operation The requested validator set operation.
     /// @param candidate The address proposed for addition or removal.
     /// @param voter The validator that cast the vote.
@@ -62,6 +62,7 @@ contract ValidatorSet {
     mapping(address => uint256) private validatorIndexes;
     mapping(address => bool) private maintenanceStatus;
     uint256 private maintenanceCount;
+    uint256 private validatorSetVersion;
     mapping(bytes32 => Proposal) private proposals;
 
     modifier onlyValidator() {
@@ -148,13 +149,29 @@ contract ValidatorSet {
         return maintenanceCount;
     }
 
+    /// @notice Returns the current validator set version.
+    /// @dev The version is incremented each time an add/remove proposal executes.
+    /// @return Current validator set version.
+    function version() external view returns (uint256) {
+        return validatorSetVersion;
+    }
+
     /// @notice Computes the proposal ID for a validator set operation.
-    /// @dev The same operation/candidate pair maps to the same proposal for all voters.
+    /// @dev The same operation/candidate pair maps to the same proposal for all voters within the current validator set version.
     /// @param operation Validator set operation type.
     /// @param candidate Candidate address proposed for addition or removal.
-    /// @return Unique proposal ID.
-    function proposalId(Operation operation, address candidate) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(operation, candidate));
+    /// @return Unique proposal ID for the current validator set version.
+    function proposalId(Operation operation, address candidate) public view returns (bytes32) {
+        return _currentProposalId(operation, candidate);
+    }
+
+    /// @notice Computes the proposal ID for a validator set operation at a specific version.
+    /// @param operation Validator set operation type.
+    /// @param candidate Candidate address proposed for addition or removal.
+    /// @param versionNumber Validator set version to include in the proposal ID.
+    /// @return Unique proposal ID for the operation, candidate, and version.
+    function proposalIdAtVersion(Operation operation, address candidate, uint256 versionNumber) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(operation, candidate, versionNumber));
     }
 
     /// @notice Returns the number of votes recorded for a proposal.
@@ -162,7 +179,7 @@ contract ValidatorSet {
     /// @param candidate Candidate address proposed for addition or removal.
     /// @return Number of votes recorded for the proposal.
     function proposalVotes(Operation operation, address candidate) external view returns (uint256) {
-        return proposals[proposalId(operation, candidate)].votes;
+        return proposals[_currentProposalId(operation, candidate)].votes;
     }
 
     /// @notice Checks whether a proposal has already executed.
@@ -170,7 +187,7 @@ contract ValidatorSet {
     /// @param candidate Candidate address proposed for addition or removal.
     /// @return True if the proposal reached quorum and executed.
     function proposalExecuted(Operation operation, address candidate) external view returns (bool) {
-        return proposals[proposalId(operation, candidate)].executed;
+        return proposals[_currentProposalId(operation, candidate)].executed;
     }
 
     /// @notice Checks whether a validator has voted for a proposal.
@@ -179,7 +196,7 @@ contract ValidatorSet {
     /// @param voter Validator address to check.
     /// @return True if `voter` has already voted for the proposal.
     function hasVoted(Operation operation, address candidate, address voter) external view returns (bool) {
-        return proposals[proposalId(operation, candidate)].voted[voter];
+        return proposals[_currentProposalId(operation, candidate)].voted[voter];
     }
 
     /// @notice Votes to add a new validator.
@@ -236,7 +253,7 @@ contract ValidatorSet {
     /// @dev Records a validator vote and executes the proposal immediately once quorum is reached.
     /// Reverts if the proposal already executed or the caller already voted for it.
     function _vote(Operation operation, address candidate) private {
-        bytes32 id = proposalId(operation, candidate);
+        bytes32 id = _currentProposalId(operation, candidate);
         Proposal storage proposal = proposals[id];
         require(!proposal.executed, "ValidatorSet: proposal executed");
         require(!proposal.voted[msg.sender], "ValidatorSet: already voted");
@@ -256,7 +273,13 @@ contract ValidatorSet {
                 _removeValidator(candidate);
                 emit ValidatorRemoved(candidate);
             }
+            validatorSetVersion++;
         }
+    }
+
+    /// @dev Computes a proposal ID for the current validator set version.
+    function _currentProposalId(Operation operation, address candidate) private view returns (bytes32) {
+        return proposalIdAtVersion(operation, candidate, validatorSetVersion);
     }
 
     /// @dev Adds a validator to the registered set and preserves registration order.

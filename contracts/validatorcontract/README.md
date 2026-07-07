@@ -78,6 +78,7 @@ This package contains the reference validator set contract used with QBFT contra
 - Governance quorum is based on all registered validators, not only active validators.
 - `faultTolerance()` is calculated as `(N - 1) / 3`, where `N` is the number of registered validators.
 - `quorumSize()` is calculated as `2f + 1`.
+- Add/remove proposal IDs include the current validator set version, so the same address can be removed, re-added, and removed again in later versions.
 - A validator in maintenance still has governance voting power.
 - At most `f` validators may be in maintenance at the same time.
 

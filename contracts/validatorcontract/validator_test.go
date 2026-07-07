@@ -151,7 +151,9 @@ func assertAddresses(t *testing.T, got []common.Address, want []common.Address) 
 }
 
 func TestValidatorSetInitialState(t *testing.T) {
-	// Viewpoint: a freshly deployed 4-validator set exposes the same active/full validator list and derives f=1, quorum=3.
+	// Viewpoint: 
+	//  A freshly deployed 4-validator set exposes the same active/full validator list and derives f=1, quorum=3.
+	
 	backend, validatorSet, accounts := deployValidatorSet(t)
 	defer backend.Close()
 
@@ -186,7 +188,9 @@ func TestValidatorSetInitialState(t *testing.T) {
 }
 
 func TestValidatorSetRejectsInvalidInitialValidators(t *testing.T) {
-	// Viewpoint: constructor validation rejects empty, zero-address, and duplicate initial validator lists.
+	// Viewpoint: 
+	//  Constructor validation rejects empty, zero-address, and duplicate initial validator lists.
+	
 	for _, tt := range []struct {
 		name       string
 		validators func() []common.Address
@@ -230,7 +234,9 @@ func TestValidatorSetRejectsInvalidInitialValidators(t *testing.T) {
 }
 
 func TestValidatorSetAddAndRemoveByQuorum(t *testing.T) {
-	// Viewpoint: add/remove proposals do not execute before quorum and execute immediately when the third vote reaches 2f+1.
+	// Viewpoint: 
+	//  Add/Remove proposals do not execute before quorum and execute immediately when the third vote reaches 2f+1.
+	
 	backend, validatorSet, accounts := deployValidatorSet(t)
 	defer backend.Close()
 

@@ -248,21 +248,21 @@ var (
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, false, 32, 35, big.NewInt(0), big.NewInt(0), nil, nil, false, nil, nil}
+	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, false, 32, 35, big.NewInt(0), big.NewInt(0), nil, nil, false, nil, nil}
 
 	// AllCliqueProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Clique consensus.
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil, nil, nil, nil, false, 32, 32, big.NewInt(0), big.NewInt(0), nil, nil, false, nil, nil}
+	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil, nil, nil, nil, false, 32, 32, big.NewInt(0), big.NewInt(0), nil, nil, false, nil, nil}
 
 	// Quorum chainID should 10
-	TestChainConfig = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, false, 32, 32, big.NewInt(0), big.NewInt(0), nil, nil, false, nil, nil}
+	TestChainConfig = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, false, 32, 32, big.NewInt(0), big.NewInt(0), nil, nil, false, nil, nil}
 	TestRules       = TestChainConfig.Rules(new(big.Int))
 
-	QuorumTestChainConfig    = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, true, 64, 32, big.NewInt(0), big.NewInt(0), nil, big.NewInt(0), false, nil, nil}
-	QuorumMPSTestChainConfig = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, true, 64, 32, big.NewInt(0), big.NewInt(0), nil, big.NewInt(0), true, nil, nil}
+	QuorumTestChainConfig    = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, true, 64, 32, big.NewInt(0), big.NewInt(0), nil, big.NewInt(0), false, nil, nil}
+	QuorumMPSTestChainConfig = &ChainConfig{big.NewInt(10), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, nil, nil, new(EthashConfig), nil, nil, nil, nil, nil, true, 64, 32, big.NewInt(0), big.NewInt(0), nil, big.NewInt(0), true, nil, nil}
 )
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and
@@ -344,6 +344,8 @@ type ChainConfig struct {
 	IstanbulBlock       *big.Int `json:"istanbulBlock,omitempty"`       // Istanbul switch block (nil = no fork, 0 = already on istanbul)
 	MuirGlacierBlock    *big.Int `json:"muirGlacierBlock,omitempty"`    // Eip-2384 (bomb delay) switch block (nil = no fork, 0 = already activated)
 	BerlinBlock         *big.Int `json:"berlinBlock,omitempty"`         // Berlin switch block (nil = no fork, 0 = already on berlin)
+	PragueBlock         *big.Int `json:"pragueBlock,omitempty"`         // Prague switch block (nil = no fork, 0 = already on prague)
+	OsakaBlock          *big.Int `json:"osakaBlock,omitempty"`          // Osaka switch block (nil = no fork, 0 = already on osaka)
 	AmsterdamBlock      *big.Int `json:"amsterdamBlock,omitempty"`      // Amsterdam switch block (nil = no fork, 0 = already on amsterdam)
 
 	YoloV3Block   *big.Int `json:"yoloV3Block,omitempty"`   // YOLO v3: Gas repricings TODO @holiman add EIP references
@@ -487,7 +489,7 @@ func (c *ChainConfig) String() string {
 	default:
 		engine = "unknown"
 	}
-	return fmt.Sprintf("{ChainID: %v Homestead: %v DAO: %v DAOSupport: %v EIP150: %v EIP155: %v EIP158: %v Byzantium: %v IsQuorum: %v Constantinople: %v TransactionSizeLimit: %v MaxCodeSize: %v Petersburg: %v Istanbul: %v, Muir Glacier: %v, Berlin: %v, Amsterdam: %v  Catalyst: %v YOLO v3: %v PrivacyEnhancements: %v PrivacyPrecompile: %v EnableGasPriceBlock: %v Engine: %v}",
+	return fmt.Sprintf("{ChainID: %v Homestead: %v DAO: %v DAOSupport: %v EIP150: %v EIP155: %v EIP158: %v Byzantium: %v IsQuorum: %v Constantinople: %v TransactionSizeLimit: %v MaxCodeSize: %v Petersburg: %v Istanbul: %v, Muir Glacier: %v, Berlin: %v, Prague: %v, Osaka: %v, Amsterdam: %v  Catalyst: %v YOLO v3: %v PrivacyEnhancements: %v PrivacyPrecompile: %v EnableGasPriceBlock: %v Engine: %v}",
 		c.ChainID,
 		c.HomesteadBlock,
 		c.DAOForkBlock,
@@ -504,6 +506,8 @@ func (c *ChainConfig) String() string {
 		c.IstanbulBlock,
 		c.MuirGlacierBlock,
 		c.BerlinBlock,
+		c.PragueBlock,
+		c.OsakaBlock,
 		c.AmsterdamBlock,
 		c.CatalystBlock,
 		c.YoloV3Block,
@@ -584,9 +588,19 @@ func (c *ChainConfig) IsBerlin(num *big.Int) bool {
 	return isForked(c.BerlinBlock, num) || isForked(c.YoloV3Block, num)
 }
 
+// IsPrague returns whether num is either equal to the Prague fork block or greater.
+func (c *ChainConfig) IsPrague(num *big.Int) bool {
+	return c.IsBerlin(num) && isForked(c.PragueBlock, num)
+}
+
+// IsOsaka returns whether num is either equal to the Osaka fork block or greater.
+func (c *ChainConfig) IsOsaka(num *big.Int) bool {
+	return c.IsPrague(num) && isForked(c.OsakaBlock, num)
+}
+
 // IsAmsterdam returns whether num is either equal to the Amsterdam fork block or greater.
 func (c *ChainConfig) IsAmsterdam(num *big.Int) bool {
-	return isForked(c.AmsterdamBlock, num)
+	return c.IsOsaka(num) && isForked(c.AmsterdamBlock, num)
 }
 
 // IsCatalyst returns whether num is either equal to the Merge fork block or greater.
@@ -1048,7 +1062,6 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		{name: "istanbulBlock", block: c.IstanbulBlock},
 		{name: "muirGlacierBlock", block: c.MuirGlacierBlock, optional: true},
 		{name: "berlinBlock", block: c.BerlinBlock},
-		{name: "amsterdamBlock", block: c.AmsterdamBlock},
 	} {
 		if lastFork.name != "" {
 			// Next one must be higher number
@@ -1066,6 +1079,36 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		// If it was optional and not set, then ignore it
 		if !cur.optional || cur.block != nil {
 			lastFork = cur
+		}
+	}
+	if c.PragueBlock != nil {
+		if c.BerlinBlock == nil {
+			return fmt.Errorf("unsupported fork ordering: berlinBlock not enabled, but pragueBlock enabled at %v",
+				c.PragueBlock)
+		}
+		if c.BerlinBlock.Cmp(c.PragueBlock) > 0 {
+			return fmt.Errorf("unsupported fork ordering: berlinBlock enabled at %v, but pragueBlock enabled at %v",
+				c.BerlinBlock, c.PragueBlock)
+		}
+	}
+	if c.OsakaBlock != nil {
+		if c.PragueBlock == nil {
+			return fmt.Errorf("unsupported fork ordering: pragueBlock not enabled, but osakaBlock enabled at %v",
+				c.OsakaBlock)
+		}
+		if c.PragueBlock.Cmp(c.OsakaBlock) > 0 {
+			return fmt.Errorf("unsupported fork ordering: pragueBlock enabled at %v, but osakaBlock enabled at %v",
+				c.PragueBlock, c.OsakaBlock)
+		}
+	}
+	if c.AmsterdamBlock != nil {
+		if c.OsakaBlock == nil {
+			return fmt.Errorf("unsupported fork ordering: osakaBlock not enabled, but amsterdamBlock enabled at %v",
+				c.AmsterdamBlock)
+		}
+		if c.OsakaBlock.Cmp(c.AmsterdamBlock) > 0 {
+			return fmt.Errorf("unsupported fork ordering: osakaBlock enabled at %v, but amsterdamBlock enabled at %v",
+				c.OsakaBlock, c.AmsterdamBlock)
 		}
 	}
 	return nil
@@ -1117,6 +1160,12 @@ func (c *ChainConfig) checkCompatible(newcfg *ChainConfig, head *big.Int, isQuor
 	}
 	if isForkIncompatible(c.BerlinBlock, newcfg.BerlinBlock, head) {
 		return newCompatError("Berlin fork block", c.BerlinBlock, newcfg.BerlinBlock)
+	}
+	if isForkIncompatible(c.PragueBlock, newcfg.PragueBlock, head) {
+		return newCompatError("Prague fork block", c.PragueBlock, newcfg.PragueBlock)
+	}
+	if isForkIncompatible(c.OsakaBlock, newcfg.OsakaBlock, head) {
+		return newCompatError("Osaka fork block", c.OsakaBlock, newcfg.OsakaBlock)
 	}
 	if isForkIncompatible(c.AmsterdamBlock, newcfg.AmsterdamBlock, head) {
 		return newCompatError("Amsterdam fork block", c.AmsterdamBlock, newcfg.AmsterdamBlock)
@@ -1212,7 +1261,7 @@ type Rules struct {
 	ChainID                                                 *big.Int
 	IsHomestead, IsEIP150, IsEIP155, IsEIP158               bool
 	IsByzantium, IsConstantinople, IsPetersburg, IsIstanbul bool
-	IsBerlin, IsAmsterdam, IsCatalyst                       bool
+	IsBerlin, IsPrague, IsOsaka, IsAmsterdam, IsCatalyst    bool
 	// Quorum
 	IsPrivacyEnhancementsEnabled bool
 	IsPrivacyPrecompile          bool
@@ -1236,6 +1285,8 @@ func (c *ChainConfig) Rules(num *big.Int) Rules {
 		IsPetersburg:     c.IsPetersburg(num),
 		IsIstanbul:       c.IsIstanbul(num),
 		IsBerlin:         c.IsBerlin(num),
+		IsPrague:         c.IsPrague(num),
+		IsOsaka:          c.IsOsaka(num),
 		IsAmsterdam:      c.IsAmsterdam(num),
 		IsCatalyst:       c.IsCatalyst(num),
 		// Quorum

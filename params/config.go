@@ -1062,6 +1062,9 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		{name: "istanbulBlock", block: c.IstanbulBlock},
 		{name: "muirGlacierBlock", block: c.MuirGlacierBlock, optional: true},
 		{name: "berlinBlock", block: c.BerlinBlock},
+		{name: "pragueBlock", block: c.PragueBlock},
+		{name: "osakaBlock", block: c.OsakaBlock},
+		{name: "amsterdamBlock", block: c.AmsterdamBlock},
 	} {
 		if lastFork.name != "" {
 			// Next one must be higher number
@@ -1079,36 +1082,6 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		// If it was optional and not set, then ignore it
 		if !cur.optional || cur.block != nil {
 			lastFork = cur
-		}
-	}
-	if c.PragueBlock != nil {
-		if c.BerlinBlock == nil {
-			return fmt.Errorf("unsupported fork ordering: berlinBlock not enabled, but pragueBlock enabled at %v",
-				c.PragueBlock)
-		}
-		if c.BerlinBlock.Cmp(c.PragueBlock) > 0 {
-			return fmt.Errorf("unsupported fork ordering: berlinBlock enabled at %v, but pragueBlock enabled at %v",
-				c.BerlinBlock, c.PragueBlock)
-		}
-	}
-	if c.OsakaBlock != nil {
-		if c.PragueBlock == nil {
-			return fmt.Errorf("unsupported fork ordering: pragueBlock not enabled, but osakaBlock enabled at %v",
-				c.OsakaBlock)
-		}
-		if c.PragueBlock.Cmp(c.OsakaBlock) > 0 {
-			return fmt.Errorf("unsupported fork ordering: pragueBlock enabled at %v, but osakaBlock enabled at %v",
-				c.PragueBlock, c.OsakaBlock)
-		}
-	}
-	if c.AmsterdamBlock != nil {
-		if c.OsakaBlock == nil {
-			return fmt.Errorf("unsupported fork ordering: osakaBlock not enabled, but amsterdamBlock enabled at %v",
-				c.AmsterdamBlock)
-		}
-		if c.OsakaBlock.Cmp(c.AmsterdamBlock) > 0 {
-			return fmt.Errorf("unsupported fork ordering: osakaBlock enabled at %v, but amsterdamBlock enabled at %v",
-				c.OsakaBlock, c.AmsterdamBlock)
 		}
 	}
 	return nil

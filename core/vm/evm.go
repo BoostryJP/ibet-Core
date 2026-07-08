@@ -60,6 +60,10 @@ type (
 func (evm *EVM) precompile(addr common.Address) (PrecompiledContract, bool) {
 	var precompiles map[common.Address]PrecompiledContract
 	switch {
+	case evm.chainRules.IsOsaka:
+		precompiles = PrecompiledContractsOsaka
+	case evm.chainRules.IsPrague:
+		precompiles = PrecompiledContractsPrague
 	case evm.chainRules.IsBerlin:
 		precompiles = PrecompiledContractsBerlin
 	case evm.chainRules.IsIstanbul:
@@ -70,19 +74,6 @@ func (evm *EVM) precompile(addr common.Address) (PrecompiledContract, bool) {
 		precompiles = PrecompiledContractsHomestead
 	}
 	p, ok := precompiles[addr]
-	if ok {
-		return p, ok
-	}
-	if evm.chainRules.IsPrague {
-		if p, ok = PrecompiledContractsPrague[addr]; ok {
-			return p, ok
-		}
-	}
-	if evm.chainRules.IsOsaka {
-		if p, ok = PrecompiledContractsOsaka[addr]; ok {
-			return p, ok
-		}
-	}
 	return p, ok
 }
 

@@ -70,6 +70,19 @@ func (evm *EVM) precompile(addr common.Address) (PrecompiledContract, bool) {
 		precompiles = PrecompiledContractsHomestead
 	}
 	p, ok := precompiles[addr]
+	if ok {
+		return p, ok
+	}
+	if evm.chainRules.IsPrague {
+		if p, ok = PrecompiledContractsPrague[addr]; ok {
+			return p, ok
+		}
+	}
+	if evm.chainRules.IsOsaka {
+		if p, ok = PrecompiledContractsOsaka[addr]; ok {
+			return p, ok
+		}
+	}
 	return p, ok
 }
 

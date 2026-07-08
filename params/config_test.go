@@ -246,6 +246,40 @@ func TestCheckCompatible(t *testing.T) {
 			wantErr: nil,
 		},
 		{
+			stored:  &ChainConfig{PragueBlock: big.NewInt(10)},
+			new:     &ChainConfig{PragueBlock: big.NewInt(20)},
+			head:    4,
+			wantErr: nil,
+		},
+		{
+			stored: &ChainConfig{PragueBlock: big.NewInt(10)},
+			new:    &ChainConfig{PragueBlock: big.NewInt(20)},
+			head:   30,
+			wantErr: &ConfigCompatError{
+				What:         "Prague fork block",
+				StoredConfig: big.NewInt(10),
+				NewConfig:    big.NewInt(20),
+				RewindTo:     9,
+			},
+		},
+		{
+			stored:  &ChainConfig{OsakaBlock: big.NewInt(10)},
+			new:     &ChainConfig{OsakaBlock: big.NewInt(20)},
+			head:    4,
+			wantErr: nil,
+		},
+		{
+			stored: &ChainConfig{OsakaBlock: big.NewInt(10)},
+			new:    &ChainConfig{OsakaBlock: big.NewInt(20)},
+			head:   30,
+			wantErr: &ConfigCompatError{
+				What:         "Osaka fork block",
+				StoredConfig: big.NewInt(10),
+				NewConfig:    big.NewInt(20),
+				RewindTo:     9,
+			},
+		},
+		{
 			stored: &ChainConfig{MaxCodeSizeConfig: storedMaxCodeConfig0},
 			new:    &ChainConfig{MaxCodeSizeConfig: nil},
 			head:   4,
@@ -321,6 +355,66 @@ func TestCheckCompatible(t *testing.T) {
 		if !reflect.DeepEqual(err, test.wantErr) {
 			t.Errorf("error mismatch:\nstored: %v\nnew: %v\nhead: %v\nerr: %v\nwant: %v", test.stored, test.new, test.head, err, test.wantErr)
 		}
+	}
+}
+
+func TestCheckConfigForkOrderPragueOsaka(t *testing.T) {
+	config := func(berlinBlock, pragueBlock, osakaBlock *big.Int) *ChainConfig {
+		cfg := *TestChainConfig
+		cfg.BerlinBlock = berlinBlock
+		cfg.PragueBlock = pragueBlock
+		cfg.OsakaBlock = osakaBlock
+		return &cfg
+	}
+
+	tests := []struct {
+		name    string
+		config  *ChainConfig
+		wantErr string
+	}{
+		{
+			name:   "prague after berlin",
+			config: config(big.NewInt(10), big.NewInt(20), nil),
+		},
+		{
+			name:   "osaka after prague",
+			config: config(big.NewInt(10), big.NewInt(20), big.NewInt(30)),
+		},
+		{
+			name:    "prague requires berlin",
+			config:  config(nil, big.NewInt(20), nil),
+			wantErr: "unsupported fork ordering: berlinBlock not enabled, but pragueBlock enabled at 20",
+		},
+		{
+			name:    "prague cannot precede berlin",
+			config:  config(big.NewInt(20), big.NewInt(10), nil),
+			wantErr: "unsupported fork ordering: berlinBlock enabled at 20, but pragueBlock enabled at 10",
+		},
+		{
+			name:    "osaka requires prague",
+			config:  config(big.NewInt(10), nil, big.NewInt(30)),
+			wantErr: "unsupported fork ordering: pragueBlock not enabled, but osakaBlock enabled at 30",
+		},
+		{
+			name:    "osaka cannot precede prague",
+			config:  config(big.NewInt(10), big.NewInt(30), big.NewInt(20)),
+			wantErr: "unsupported fork ordering: pragueBlock enabled at 30, but osakaBlock enabled at 20",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.config.CheckConfigForkOrder()
+			if tt.wantErr == "" {
+				if err != nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
+				return
+			}
+			if err == nil || err.Error() != tt.wantErr {
+				t.Fatalf("error mismatch:\nerr: %v\nwant: %v", err, tt.wantErr)
+			}
+		})
 	}
 }
 
@@ -520,6 +614,57 @@ func TestIsQIP714(t *testing.T) {
 		if !reflect.DeepEqual(isQIP714, test.IsQIP714) {
 			t.Errorf("error mismatch on %v:\nexpected: %v\nreceived: %v\n", test.blockNumber, test.IsQIP714, isQIP714)
 		}
+	}
+}
+
+func TestIsPragueAndOsaka(t *testing.T) {
+	tests := []struct {
+		name     string
+		config   *ChainConfig
+		block    int64
+		isPrague bool
+		isOsaka  bool
+	}{
+		{
+			name:     "prague requires berlin",
+			config:   &ChainConfig{PragueBlock: big.NewInt(0)},
+			block:    0,
+			isPrague: false,
+			isOsaka:  false,
+		},
+		{
+			name:     "osaka requires prague",
+			config:   &ChainConfig{BerlinBlock: big.NewInt(0), OsakaBlock: big.NewInt(0)},
+			block:    0,
+			isPrague: false,
+			isOsaka:  false,
+		},
+		{
+			name:     "prague active after berlin and prague blocks",
+			config:   &ChainConfig{BerlinBlock: big.NewInt(0), PragueBlock: big.NewInt(10)},
+			block:    10,
+			isPrague: true,
+			isOsaka:  false,
+		},
+		{
+			name:     "osaka active after prague and osaka blocks",
+			config:   &ChainConfig{BerlinBlock: big.NewInt(0), PragueBlock: big.NewInt(10), OsakaBlock: big.NewInt(20)},
+			block:    20,
+			isPrague: true,
+			isOsaka:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			block := big.NewInt(tt.block)
+			if got := tt.config.IsPrague(block); got != tt.isPrague {
+				t.Fatalf("IsPrague mismatch: got %v, want %v", got, tt.isPrague)
+			}
+			if got := tt.config.IsOsaka(block); got != tt.isOsaka {
+				t.Fatalf("IsOsaka mismatch: got %v, want %v", got, tt.isOsaka)
+			}
+		})
 	}
 }
 

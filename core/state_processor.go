@@ -80,6 +80,9 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, pri
 	if p.config.DAOForkSupport && p.config.DAOForkBlock != nil && p.config.DAOForkBlock.Cmp(block.Number()) == 0 {
 		misc.ApplyDAOHardFork(statedb)
 	}
+	if isEIP7997Transition(p.config, p.bc, header) {
+		misc.ApplyEIP7997(statedb)
+	}
 	blockContext := NewEVMBlockContext(header, p.bc, nil)
 	// Iterate over and process the individual transactions
 	for i, tx := range block.Transactions() {
@@ -150,6 +153,17 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, pri
 	p.engine.Finalize(p.bc, header, statedb, block.Transactions(), block.Uncles())
 
 	return receipts, privateReceipts, allLogs, *usedGas, nil
+}
+
+func isEIP7997Transition(config *params.ChainConfig, chain ChainContext, header *types.Header) bool {
+	if header.Number.Sign() == 0 || !config.IsAmsterdam(header.Number) {
+		return false
+	}
+	parent := chain.GetHeader(header.ParentHash, header.Number.Uint64()-1)
+	if parent == nil {
+		return false
+	}
+	return !config.IsAmsterdam(parent.Number)
 }
 
 // Quorum

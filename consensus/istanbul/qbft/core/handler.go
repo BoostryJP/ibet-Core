@@ -19,6 +19,7 @@ package core
 import (
 	"fmt"
 	"math/big"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/istanbul"
@@ -32,12 +33,15 @@ func (c *core) Start() error {
 	c.logger.Info("QBFT: start")
 	// Tests will handle events itself, so we have to make subscribeEvents()
 	// be able to call in test.
+	c.timerEvents = make(chan timerEvent)
+	c.timerDone = make(chan struct{})
+	c.stopOnce = sync.Once{}
 	c.subscribeEvents()
+
+	// Initialize consensus before the event loop can receive messages.
+	c.startNewRound(common.Big0)
 	c.handlerWg.Add(1)
 	go c.handleEvents()
-
-	// Start a new round from last sequence + 1
-	c.startNewRound(common.Big0)
 
 	return nil
 }
@@ -45,7 +49,7 @@ func (c *core) Start() error {
 // Stop implements core.Engine.Stop
 func (c *core) Stop() error {
 	c.logger.Info("QBFT: stopping...")
-	c.stopTimer()
+	c.stopOnce.Do(func() { close(c.timerDone) })
 	c.unsubscribeEvents()
 
 	// Make sure the handler goroutine exits
@@ -65,9 +69,6 @@ func (c *core) subscribeEvents() {
 		// internal events
 		backlogEvent{},
 	)
-	c.timeoutSub = c.backend.EventMux().Subscribe(
-		timeoutEvent{},
-	)
 	c.finalCommittedSub = c.backend.EventMux().Subscribe(
 		istanbul.FinalCommittedEvent{},
 	)
@@ -76,7 +77,6 @@ func (c *core) subscribeEvents() {
 // Unsubscribe all events
 func (c *core) unsubscribeEvents() {
 	c.events.Unsubscribe()
-	c.timeoutSub.Unsubscribe()
 	c.finalCommittedSub.Unsubscribe()
 }
 
@@ -94,12 +94,18 @@ func (c *core) unsubscribeEvents() {
 func (c *core) handleEvents() {
 	// Clear state
 	defer func() {
+		c.stopOnce.Do(func() { close(c.timerDone) })
+		c.stopTimer()
 		c.current = nil
 		c.handlerWg.Done()
 	}()
 
 	for {
 		select {
+		case <-c.timerDone:
+			return
+		case event := <-c.timerEvents:
+			c.handleTimerEvent(event)
 		case event, ok := <-c.events.Chan():
 			if !ok {
 				return
@@ -141,12 +147,6 @@ func (c *core) handleEvents() {
 				// if successfully processed, we gossip message to other validators
 				c.backend.Gossip(c.valSet, ev.msg.Code(), data)
 			}
-		case _, ok := <-c.timeoutSub.Chan():
-			// we received a round change timeout
-			if !ok {
-				return
-			}
-			c.handleTimeoutMsg()
 		case event, ok := <-c.finalCommittedSub.Chan():
 			// our block proposal got committed
 			if !ok {

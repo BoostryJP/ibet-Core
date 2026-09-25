@@ -52,6 +52,7 @@ func New(backend istanbul.Backend, config *istanbul.Config) istanbul.Core {
 		pendingRequests:    prque.New(),
 		pendingRequestsMu:  new(sync.Mutex),
 		consensusTimestamp: time.Time{},
+		afterFunc:          func(d time.Duration, f func()) timer { return time.AfterFunc(d, f) },
 	}
 
 	c.validateFn = c.checkValidatorSignature
@@ -66,11 +67,9 @@ type core struct {
 	state   State
 	logger  log.Logger
 
-	backend               istanbul.Backend
-	events                *event.TypeMuxSubscription
-	finalCommittedSub     *event.TypeMuxSubscription
-	timeoutSub            *event.TypeMuxSubscription
-	futurePreprepareTimer *time.Timer
+	backend           istanbul.Backend
+	events            *event.TypeMuxSubscription
+	finalCommittedSub *event.TypeMuxSubscription
 
 	valSet     istanbul.ValidatorSet
 	validateFn func([]byte, []byte) (common.Address, error)
@@ -82,8 +81,7 @@ type core struct {
 	currentMutex sync.Mutex
 	handlerWg    *sync.WaitGroup
 
-	roundChangeSet   *roundChangeSet
-	roundChangeTimer *time.Timer
+	roundChangeSet *roundChangeSet
 
 	QBFTPreparedPrepares []*qbfttypes.Prepare
 
@@ -92,8 +90,12 @@ type core struct {
 
 	consensusTimestamp time.Time
 
-	newRoundMutex sync.Mutex
-	newRoundTimer *time.Timer
+	// Timer state belongs to the event loop. Callbacks only send immutable events.
+	timers      [timerKindCount]scheduledTimer
+	afterFunc   func(time.Duration, func()) timer
+	timerEvents chan timerEvent
+	timerDone   chan struct{}
+	stopOnce    sync.Once
 }
 
 func (c *core) currentView() *istanbul.View {
@@ -186,6 +188,8 @@ func (c *core) startNewRound(round *big.Int) {
 		c.valSet = c.backend.Validators(lastProposal)
 	}
 
+	c.stopTimer()
+
 	// New snapshot for new round
 	c.updateRoundState(newView, c.valSet, roundChange)
 
@@ -243,24 +247,17 @@ func (c *core) Address() common.Address {
 }
 
 func (c *core) stopFuturePreprepareTimer() {
-	if c.futurePreprepareTimer != nil {
-		c.futurePreprepareTimer.Stop()
-	}
+	c.cancelTimer(futurePreprepareTimer)
 }
 
 func (c *core) stopTimer() {
-	c.stopFuturePreprepareTimer()
-	if c.roundChangeTimer != nil {
-		c.roundChangeTimer.Stop()
+	for kind := timerKind(0); kind < timerKindCount; kind++ {
+		c.cancelTimer(kind)
 	}
 }
 
 func (c *core) newRoundChangeTimer() {
-	c.stopTimer()
-
-	for c.current == nil { // wait because it is asynchronous in handleRequest
-		time.Sleep(10 * time.Millisecond)
-	}
+	c.stopFuturePreprepareTimer()
 
 	// set timeout based on the round number
 	baseTimeout := time.Duration(c.config.GetConfig(c.current.Sequence()).RequestTimeout) * time.Millisecond
@@ -294,9 +291,7 @@ func (c *core) newRoundChangeTimer() {
 	}
 
 	c.currentLogger(true, nil).Trace("QBFT: start new ROUND-CHANGE timer", "timeout", timeout.Seconds())
-	c.roundChangeTimer = time.AfterFunc(timeout, func() {
-		c.sendEvent(timeoutEvent{})
-	})
+	c.scheduleTimer(roundChangeTimer, timeout, timerEvent{})
 }
 
 func (c *core) checkValidatorSignature(data []byte, sig []byte) (common.Address, error) {

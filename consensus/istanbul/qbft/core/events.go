@@ -25,5 +25,3 @@ type backlogEvent struct {
 	src istanbul.Validator
 	msg qbfttypes.QBFTMessage
 }
-
-type timeoutEvent struct{}

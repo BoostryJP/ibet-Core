@@ -16,7 +16,11 @@
 
 package params
 
-import "math/big"
+import (
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+)
 
 const (
 	// these are original values from upstream Geth, used in ethash consensus
@@ -160,6 +164,10 @@ var (
 	GenesisDifficulty      = big.NewInt(131072) // Difficulty of the Genesis block.
 	MinimumDifficulty      = big.NewInt(131072) // The minimum that the difficulty may ever be.
 	DurationLimit          = big.NewInt(13)     // The decision boundary on the blocktime duration used to determine whether difficulty should go up or not.
+
+	// EIP-7997 - Deterministic deployment factory (keyless CREATE2 factory)
+	DeterministicFactoryAddress = common.HexToAddress("0x4e59b44847b379578588920cA78FbF26c0B4956C")
+	DeterministicFactoryCode    = common.FromHex("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3")
 )
 
 func GetMaximumExtraDataSize(isQuorum bool) uint64 {

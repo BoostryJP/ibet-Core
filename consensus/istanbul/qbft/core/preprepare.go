@@ -132,15 +132,8 @@ func (c *core) handlePreprepareMsg(preprepare *qbfttypes.Preprepare) error {
 		if err == consensus.ErrFutureBlock {
 			logger.Info("QBFT: PRE-PREPARE block proposal is in the future (will be treated again later)", "duration", duration)
 
-			// start a timer to re-input PRE-PREPARE message as a backlog event
-			c.stopFuturePreprepareTimer()
-			c.futurePreprepareTimer = time.AfterFunc(duration, func() {
-				_, validator := c.valSet.GetByAddress(preprepare.Source())
-				c.sendEvent(backlogEvent{
-					src: validator,
-					msg: preprepare,
-				})
-			})
+			// Retry through the event loop only while this view and timer remain valid.
+			c.scheduleTimer(futurePreprepareTimer, duration, timerEvent{preprepare: preprepare})
 		} else {
 			logger.Warn("QBFT: invalid PRE-PREPARE block proposal", "err", err)
 		}
@@ -151,6 +144,8 @@ func (c *core) handlePreprepareMsg(preprepare *qbfttypes.Preprepare) error {
 	// Here is about to accept the PRE-PREPARE
 	if c.state == StateAcceptRequest {
 		c.logger.Info("QBFT: accepted PRE-PREPARE message")
+
+		c.cancelTimer(emptyBlockTimer)
 
 		// Re-initialize ROUND-CHANGE timer
 		c.newRoundChangeTimer()

@@ -44,6 +44,7 @@ func (c *core) handleRequest(request *Request) error {
 		return err
 	}
 
+	c.cancelTimer(emptyBlockTimer)
 	c.current.pendingRequest = request
 	if c.state == StateAcceptRequest {
 		config := c.config.GetConfig(c.current.Sequence())
@@ -54,14 +55,6 @@ func (c *core) handleRequest(request *Request) error {
 			// Send PRE-PREPARE message to other validators
 			c.sendPreprepareMsg(request)
 		} else { // emptyBlockPeriod is set
-			c.newRoundMutex.Lock()
-			defer c.newRoundMutex.Unlock()
-
-			if c.newRoundTimer != nil {
-				c.newRoundTimer.Stop()
-				c.newRoundTimer = nil
-			}
-
 			delay := time.Duration(0)
 
 			block, ok := request.Proposal.(*types.Block)
@@ -77,14 +70,7 @@ func (c *core) handleRequest(request *Request) error {
 				}
 			}
 			if delay > 0 {
-				c.newRoundTimer = time.AfterFunc(delay, func() {
-					c.newRoundTimer = nil
-					// Start ROUND-CHANGE timer
-					c.newRoundChangeTimer()
-
-					// Send PRE-PREPARE message to other validators
-					c.sendPreprepareMsg(request)
-				})
+				c.scheduleTimer(emptyBlockTimer, delay, timerEvent{proposalHash: request.Proposal.Hash()})
 			} else {
 				// Start ROUND-CHANGE timer
 				c.newRoundChangeTimer()

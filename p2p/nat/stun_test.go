@@ -17,16 +17,42 @@
 package nat
 
 import (
+	"fmt"
+	"net"
 	"testing"
 
+	stunV2 "github.com/pion/stun/v2"
+	"github.com/pion/stun/v2/stuntest"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNatStun(t *testing.T) {
-	nat, err := newSTUN("")
+	mappedIP := net.ParseIP("203.0.113.10").To4()
+	serverAddr, closeServer, err := stuntest.NewUDPServer(t, "udp4", 2048, func(req []byte) ([]byte, error) {
+		reqMsg := new(stunV2.Message)
+		if err := stunV2.Decode(req, reqMsg); err != nil {
+			return nil, err
+		}
+		if reqMsg.Type != stunV2.BindingRequest {
+			return nil, fmt.Errorf("unexpected STUN message type: %v", reqMsg.Type)
+		}
+		resp, err := stunV2.Build(reqMsg, stunV2.BindingSuccess, &stunV2.XORMappedAddress{
+			IP:   mappedIP,
+			Port: 54321,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Raw, nil
+	})
 	assert.NoError(t, err)
-	_, err = nat.ExternalIP()
+	defer closeServer(t)
+
+	nat, err := newSTUN(serverAddr.String())
 	assert.NoError(t, err)
+	ip, err := nat.ExternalIP()
+	assert.NoError(t, err)
+	assert.Equal(t, mappedIP, ip)
 }
 
 func TestUnreachedNatServer(t *testing.T) {

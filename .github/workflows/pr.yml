@@ -5,22 +5,20 @@ on:
       - 'docs/**'
       - '**.md'
       - .gitignore
-env:
-  GO_VERSION: 1.26.4
 jobs:
   lint:
     name: 'Code linters'
     runs-on: ubuntu-latest
     steps:
-      - name: 'Setup Go ${{ env.GO_VERSION }}'
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: ${{ env.GO_VERSION }}
       - name: 'Check out project files'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: '0'
           submodules: false
+      - name: 'Setup Go'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
       - name: 'Prepare environment'
         run: |
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
@@ -37,15 +35,15 @@ jobs:
       QUORUM_IGNORE_TEST_PACKAGES: github.com/ethereum/go-ethereum/les,github.com/ethereum/go-ethereum/les/flowcontrol,github.com/ethereum/go-ethereum/mobile
     runs-on: ${{ matrix.os }}
     steps:
-      - name: 'Setup Go ${{ env.GO_VERSION }}'
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: ${{ env.GO_VERSION }}
       - name: 'Check out project files'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: '0'
           submodules: recursive
+      - name: 'Setup Go'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
       - name: 'Prepare environment'
         run: |
           # https://github.com/actions/virtual-environments/issues/798

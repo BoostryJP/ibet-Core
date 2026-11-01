@@ -12,7 +12,7 @@ ibet-Core is the ibet Network node client, independently maintained from a GoQuo
 
 ## Build, Test, and Development Commands
 
-Install Go 1.26.4 (matching `.go-version` and `go.mod`) and a C compiler. Run commands from the repository root.
+Install Go 1.26.10 (matching `.go-version` and `go.mod`) and a C compiler. Run commands from the repository root.
 
 - `git submodule update --init --recursive`: fetch test fixtures under `tests/testdata`.
 - `make geth`: build the node as `build/bin/geth`.
